@@ -39,6 +39,20 @@ app.use('/api/auth', authRoutes);
 app.use('/api/bookings', bookingRoutes);
 app.use('/api/jobs', jobRoutes);
 
+// API root endpoint
+app.get('/api', (_req, res) => {
+  res.json({
+    message: 'HandySwift API',
+    version: '1.0.0',
+    endpoints: {
+      auth: '/api/auth',
+      jobs: '/api/jobs',
+      bookings: '/api/bookings',
+      health: '/health'
+    }
+  });
+});
+
 // 404 Handler
 app.use((_req, res) => {
   res.status(404).json({
