@@ -52,7 +52,8 @@ export function ProviderDashboard() {
         setLoadingJobs(true);
         setJobsError('');
         const token = localStorage.getItem('authToken');
-        const response = await fetch('http://localhost:5000/api/jobs/available/for-provider', {
+        const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+        const response = await fetch(`${apiUrl}/jobs/available/for-provider`, {
           method: 'GET',
           headers: {
             'Authorization': `Bearer ${token}`,

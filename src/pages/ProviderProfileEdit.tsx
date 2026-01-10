@@ -63,7 +63,8 @@ export function ProviderProfileEdit() {
 
     try {
       const token = localStorage.getItem('authToken');
-      const response = await fetch('http://localhost:5000/api/auth/profile', {
+      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+      const response = await fetch(`${apiUrl}/auth/profile`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,
