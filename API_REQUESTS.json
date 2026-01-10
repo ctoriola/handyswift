@@ -1,0 +1,216 @@
+{
+  "client": "Postman",
+  "collectionName": "HandySwift API",
+  "description": "API requests for HandySwift backend",
+  "requests": [
+    {
+      "name": "Health Check",
+      "method": "GET",
+      "url": "http://localhost:5000/health",
+      "description": "Test if backend is running"
+    },
+    {
+      "name": "Register User",
+      "method": "POST",
+      "url": "http://localhost:5000/api/auth/register",
+      "headers": {
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "username": "john_doe",
+        "email": "john@example.com",
+        "password": "SecurePass123!",
+        "name": "John Doe",
+        "phone": "+234 801 234 5678",
+        "role": "user"
+      }
+    },
+    {
+      "name": "Register Provider",
+      "method": "POST",
+      "url": "http://localhost:5000/api/auth/register",
+      "headers": {
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "username": "jane_provider",
+        "email": "jane@example.com",
+        "password": "SecurePass123!",
+        "name": "Jane Smith",
+        "phone": "+234 801 987 6543",
+        "role": "provider"
+      }
+    },
+    {
+      "name": "Login",
+      "method": "POST",
+      "url": "http://localhost:5000/api/auth/login",
+      "headers": {
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "email": "john@example.com",
+        "password": "SecurePass123!"
+      },
+      "description": "Returns user data. Use for testing in frontend."
+    },
+    {
+      "name": "Get Current User",
+      "method": "GET",
+      "url": "http://localhost:5000/api/auth/me",
+      "headers": {
+        "Authorization": "Bearer YOUR_JWT_TOKEN_HERE",
+        "Content-Type": "application/json"
+      },
+      "description": "Replace YOUR_JWT_TOKEN_HERE with actual token from login response"
+    },
+    {
+      "name": "Update Profile",
+      "method": "PUT",
+      "url": "http://localhost:5000/api/auth/profile",
+      "headers": {
+        "Authorization": "Bearer YOUR_JWT_TOKEN_HERE",
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "name": "John Updated",
+        "phone": "+234 801 111 2222",
+        "bio": "I'm a service provider",
+        "location": "Lagos, Nigeria",
+        "profilePhoto": "https://example.com/photo.jpg"
+      }
+    },
+    {
+      "name": "Change Password",
+      "method": "POST",
+      "url": "http://localhost:5000/api/auth/change-password",
+      "headers": {
+        "Authorization": "Bearer YOUR_JWT_TOKEN_HERE",
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "currentPassword": "SecurePass123!",
+        "newPassword": "NewSecurePass456!"
+      }
+    },
+    {
+      "name": "Get User Statistics",
+      "method": "GET",
+      "url": "http://localhost:5000/api/auth/stats",
+      "headers": {
+        "Authorization": "Bearer YOUR_JWT_TOKEN_HERE",
+        "Content-Type": "application/json"
+      }
+    },
+    {
+      "name": "Get All Bookings",
+      "method": "GET",
+      "url": "http://localhost:5000/api/bookings?status=ongoing&limit=10&offset=0",
+      "headers": {
+        "Authorization": "Bearer YOUR_JWT_TOKEN_HERE",
+        "Content-Type": "application/json"
+      },
+      "description": "Query params: status (ongoing/completed/cancelled), limit, offset"
+    },
+    {
+      "name": "Get Single Booking",
+      "method": "GET",
+      "url": "http://localhost:5000/api/bookings/BOOKING_ID_HERE",
+      "headers": {
+        "Authorization": "Bearer YOUR_JWT_TOKEN_HERE",
+        "Content-Type": "application/json"
+      }
+    },
+    {
+      "name": "Cancel Booking",
+      "method": "PUT",
+      "url": "http://localhost:5000/api/bookings/BOOKING_ID_HERE/cancel",
+      "headers": {
+        "Authorization": "Bearer YOUR_JWT_TOKEN_HERE",
+        "Content-Type": "application/json"
+      },
+      "description": "Only works for ongoing bookings"
+    },
+    {
+      "name": "Post a Job",
+      "method": "POST",
+      "url": "http://localhost:5000/api/jobs",
+      "headers": {
+        "Authorization": "Bearer YOUR_JWT_TOKEN_HERE",
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "title": "Need a carpenter for furniture assembly",
+        "description": "Looking for an experienced carpenter to assemble IKEA furniture",
+        "category": "Carpentry",
+        "budget": 15000,
+        "budgetType": "fixed",
+        "expiresAt": "2026-02-10T23:59:59Z"
+      }
+    },
+    {
+      "name": "Get User's Jobs",
+      "method": "GET",
+      "url": "http://localhost:5000/api/jobs?status=active&limit=10&offset=0",
+      "headers": {
+        "Authorization": "Bearer YOUR_JWT_TOKEN_HERE",
+        "Content-Type": "application/json"
+      },
+      "description": "Query params: status (active/closed), limit, offset"
+    },
+    {
+      "name": "Get Single Job",
+      "method": "GET",
+      "url": "http://localhost:5000/api/jobs/JOB_ID_HERE",
+      "headers": {
+        "Authorization": "Bearer YOUR_JWT_TOKEN_HERE",
+        "Content-Type": "application/json"
+      }
+    },
+    {
+      "name": "Get Job Offers",
+      "method": "GET",
+      "url": "http://localhost:5000/api/jobs/JOB_ID_HERE/offers",
+      "headers": {
+        "Authorization": "Bearer YOUR_JWT_TOKEN_HERE",
+        "Content-Type": "application/json"
+      },
+      "description": "Get all offers for a specific job"
+    },
+    {
+      "name": "Accept Job Offer",
+      "method": "PUT",
+      "url": "http://localhost:5000/api/jobs/JOB_ID_HERE/offers/OFFER_ID_HERE/accept",
+      "headers": {
+        "Authorization": "Bearer YOUR_JWT_TOKEN_HERE",
+        "Content-Type": "application/json"
+      },
+      "description": "Accepts offer, creates booking, rejects other offers"
+    },
+    {
+      "name": "Reject Job Offer",
+      "method": "PUT",
+      "url": "http://localhost:5000/api/jobs/JOB_ID_HERE/offers/OFFER_ID_HERE/reject",
+      "headers": {
+        "Authorization": "Bearer YOUR_JWT_TOKEN_HERE",
+        "Content-Type": "application/json"
+      }
+    },
+    {
+      "name": "Close Job Posting",
+      "method": "PUT",
+      "url": "http://localhost:5000/api/jobs/JOB_ID_HERE/close",
+      "headers": {
+        "Authorization": "Bearer YOUR_JWT_TOKEN_HERE",
+        "Content-Type": "application/json"
+      },
+      "description": "Close job and reject all pending offers"
+    }
+  ],
+  "notes": {
+    "authentication": "Replace 'YOUR_JWT_TOKEN_HERE' with actual token from login response",
+    "variables": "Replace BOOKING_ID_HERE, JOB_ID_HERE, OFFER_ID_HERE with actual IDs",
+    "base_url": "http://localhost:5000",
+    "testing": "You can import this collection into Postman (File → Import)"
+  }
+}
