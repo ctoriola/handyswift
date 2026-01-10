@@ -24,6 +24,16 @@ app.get('/health', (_req, res) => {
   res.json({ status: 'OK', timestamp: new Date().toISOString() });
 });
 
+// Root redirect
+app.get('/', (_req, res) => {
+  res.json({ 
+    message: 'HandySwift API Server', 
+    health: '/health',
+    docs: 'API running at /api/*',
+    version: '1.0.0'
+  });
+});
+
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/bookings', bookingRoutes);
