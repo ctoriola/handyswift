@@ -1,5 +1,5 @@
 import { SearchBar } from "./SearchBar";
-import professionalTeamImage from '../assets/5c21b3f63311a7a5846dc0ef02095b6718eead83.png';
+import professionalTeamImage from '@assets/5c21b3f63311a7a5846dc0ef02095b6718eead83.png';
 
 function ProfessionalTeamIllustration() {
   return (
