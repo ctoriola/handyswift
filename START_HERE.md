@@ -47,7 +47,7 @@ git init
 git add .
 git commit -m "Production ready"
 git branch -M main
-git remote add origin https://github.com/YOUR_USERNAME/handyswift.git
+git remote add origin https://github.com/ctoriola/handyswift.git
 git push -u origin main
 ```
 
@@ -58,7 +58,7 @@ git push -u origin main
 4. Click Deploy
 
 ### Step 3: Deploy Backend & Update (5 min)
-1. Deploy to Railway/Heroku/Render
+1. Deploy to **Vercel** (same platform) OR Railway/Heroku/Render
 2. Update Vercel environment variable with backend URL
 3. Redeploy
 

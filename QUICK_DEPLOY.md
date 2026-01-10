@@ -45,8 +45,10 @@ git push -u origin main
 1. Go to https://vercel.com
 2. Click "Add New" → "Project"
 3. Import GitHub repository
-4. Add environment: `VITE_API_URL=https://your-backend/api`
-5. Click "Deploy"
+4. **DO NOT add env vars yet** - just click Deploy
+5. After deployed, go to **Settings → Environment Variables**
+6. Add: `VITE_API_URL` = `https://your-backend-url/api` (use your actual backend URL)
+7. Click "Redeploy" to apply the variable
 
 ### Step 3: Deploy Backend & Update (5 minutes)
 1. Deploy backend to Railway/Heroku/Render
@@ -75,6 +77,15 @@ Dashboard:             https://vercel.com/dashboard
 ```
 VITE_API_URL = https://your-backend-url/api
 ```
+
+**How to set:**
+1. Go to Vercel Dashboard → Your Project → Settings
+2. Click "Environment Variables"
+3. Add new variable:
+   - Name: `VITE_API_URL`
+   - Value: `https://your-backend-url/api` (your actual backend URL)
+4. Click "Add"
+5. Go to Deployments → Latest → Click "Redeploy"
 
 ### Backend (Set in Railway/Heroku)
 ```

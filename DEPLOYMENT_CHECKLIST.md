@@ -74,8 +74,11 @@ git push -u origin main
 - [ ] Output directory: `dist`
 
 ### Environment Variables in Vercel
-- [ ] `VITE_API_URL` = `https://your-backend-domain.com/api`
-- [ ] All variables saved and deployment triggered
+- [ ] Go to Settings → Environment Variables
+- [ ] Add `VITE_API_URL` = `https://your-backend-domain.com/api`
+- [ ] Save and redeploy to apply variables
+
+**Note**: Do NOT use `@secret_name` syntax - just enter the value directly
 
 ### Verification
 - [ ] Deployment completed without errors

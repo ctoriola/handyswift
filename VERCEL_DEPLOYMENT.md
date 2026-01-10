@@ -72,7 +72,32 @@ In Vercel Dashboard:
 
 ## Backend Deployment
 
-### Option 1: Railway (Recommended - Easiest)
+### Option 1: Vercel (Same as Frontend - Easiest!)
+
+1. Go to https://vercel.com
+2. Create new project
+3. Select `backend` directory as root
+4. Framework: **Node.js**
+5. Environment Variables:
+   ```
+   SUPABASE_URL=https://xxxxx.supabase.co
+   SUPABASE_ANON_KEY=your_anon_key
+   SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
+   JWT_SECRET=generate_random_secret_here
+   CORS_ORIGIN=https://your-vercel-frontend-domain.vercel.app
+   ```
+6. Deploy
+
+**Pros**:
+- ✅ One platform for frontend + backend
+- ✅ Easier to manage
+- ✅ Free tier available
+- ✅ Same deployment experience
+
+**Cons**:
+- Serverless functions have cold start times (~1-2s first request)
+
+### Option 2: Railway (Alternative)
 
 1. Go to https://railway.app
 2. Create new project
@@ -90,7 +115,7 @@ In Vercel Dashboard:
    ```
 6. Deploy
 
-### Option 2: Heroku
+### Option 3: Heroku
 
 1. Create Heroku account at https://heroku.com
 2. Create new app
@@ -100,7 +125,7 @@ In Vercel Dashboard:
 5. Set environment variables in Settings
 6. Deploy from main branch
 
-### Option 3: Render
+### Option 4: Render
 
 1. Go to https://render.com
 2. Create new Web Service
