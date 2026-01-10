@@ -29,11 +29,15 @@ git push origin main
 1. Go to https://vercel.com/dashboard
 2. Click "New Project"
 3. Select your GitHub repository
-4. **Important**: Set root directory to `backend/`
+4. **Set root directory to `backend/`** (IMPORTANT!)
 5. Framework: **Node.js**
-6. Click "Environment Variables"
-7. Add your variables (see below)
-8. Click "Deploy" ✨
+6. **DO NOT add environment variables during initial deployment**
+7. Click "Deploy"
+8. Wait for deployment to complete
+9. After deployment:
+   - Go to **Settings → Environment Variables**
+   - Add each variable below (see list in next section)
+   - Click "Redeploy" to apply variables
 
 **Option B: Using Vercel CLI**
 
@@ -54,15 +58,34 @@ vercel --prod
 
 In Vercel Dashboard, add these under **Settings → Environment Variables**:
 
-```
-SUPABASE_URL=https://xxxxx.supabase.co
-SUPABASE_ANON_KEY=eyJhbGci...
-SUPABASE_SERVICE_ROLE_KEY=eyJhbGci...
-JWT_SECRET=your-random-secure-key-here
-CORS_ORIGIN=https://your-frontend-domain.vercel.app
-NODE_ENV=production
-PORT=3000
-```
+**Click "Add New" for EACH variable:**
+
+1. **SUPABASE_URL**
+   - Value: `https://xxxxx.supabase.co` (your actual Supabase URL)
+
+2. **SUPABASE_ANON_KEY**
+   - Value: `eyJhbGci...` (your Supabase Anon Key)
+
+3. **SUPABASE_SERVICE_ROLE_KEY**
+   - Value: `eyJhbGci...` (your Service Role Key)
+
+4. **JWT_SECRET**
+   - Value: `random-string-32-characters-or-more`
+
+5. **CORS_ORIGIN**
+   - Value: `https://your-frontend-domain.vercel.app`
+
+6. **NODE_ENV**
+   - Value: `production`
+
+7. **PORT**
+   - Value: `3000`
+
+**After adding all variables:**
+1. Go to **Deployments** tab
+2. Click your latest deployment
+3. Click **"Redeploy"** button
+4. Wait for redeployment to complete
 
 ---
 
