@@ -368,6 +368,8 @@ export function AdminProvidersPage() {
           </AlertDialog>
         )}
       </div>
+        </div>
+      </div>
     </div>
   );
 }
