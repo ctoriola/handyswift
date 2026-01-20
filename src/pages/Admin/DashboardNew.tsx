@@ -28,7 +28,12 @@ interface AdminStats {
 export function AdminDashboard() {
   const { user, isAdmin } = useAuth();
   const navigate = useNavigate();
-  const [stats, setStats] = useState<AdminStats | null>(null);
+  const [stats, setStats] = useState<AdminStats>({
+    users: { total: 0, providers: 0, activeProviders: 0 },
+    jobs: { total: 0, completed: 0, completionRate: 0 },
+    bookings: { total: 0 },
+    admin: { pendingProviderApplications: 0, openReports: 0 },
+  });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
@@ -52,7 +57,7 @@ export function AdminDashboard() {
 
       if (!response.ok) throw new Error('Failed to fetch stats');
       const data = await response.json();
-      setStats(data);
+      setStats(data.data || stats);
     } catch (err: any) {
       setError(err.message);
     } finally {
@@ -75,7 +80,7 @@ export function AdminDashboard() {
               <div className="text-center py-8 text-slate-400">Loading...</div>
             ) : error ? (
               <div className="text-red-600">Error: {error}</div>
-            ) : stats ? (
+            ) : (
               <>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
                   <Card className="bg-slate-800 border-slate-700">
