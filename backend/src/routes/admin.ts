@@ -418,71 +418,104 @@ router.get('/bookings', authMiddleware, isAdmin, async (req: AuthRequest, res: a
 // Get platform statistics
 router.get('/stats', authMiddleware, isAdmin, async (req: AuthRequest, res: any) => {
   try {
-    // Total users
-    const { count: totalUsers } = await supabaseAdmin
-      .from('users')
-      .select('id', { count: 'exact' });
+    let totalUsers = 0;
+    let totalProviders = 0;
+    let activeProviders = 0;
+    let totalJobs = 0;
+    let completedJobs = 0;
+    let totalBookings = 0;
+    let pendingProviders = 0;
+    let openReports = 0;
+
+    // Total users (always exists)
+    try {
+      const { count } = await supabaseAdmin
+        .from('users')
+        .select('id', { count: 'exact' });
+      totalUsers = count || 0;
+    } catch (e) { /* table might not exist */ }
 
     // Total providers
-    const { count: totalProviders } = await supabaseAdmin
-      .from('users')
-      .select('id', { count: 'exact' })
-      .eq('role', 'provider');
+    try {
+      const { count } = await supabaseAdmin
+        .from('users')
+        .select('id', { count: 'exact' })
+        .eq('role', 'provider');
+      totalProviders = count || 0;
+    } catch (e) { /* table might not exist */ }
 
     // Active providers (verified)
-    const { count: activeProviders } = await supabaseAdmin
-      .from('users')
-      .select('id', { count: 'exact' })
-      .eq('role', 'provider')
-      .eq('is_verified', true);
+    try {
+      const { count } = await supabaseAdmin
+        .from('users')
+        .select('id', { count: 'exact' })
+        .eq('role', 'provider')
+        .eq('is_verified', true);
+      activeProviders = count || 0;
+    } catch (e) { /* table might not exist */ }
 
     // Total jobs posted
-    const { count: totalJobs } = await supabaseAdmin
-      .from('jobs')
-      .select('id', { count: 'exact' });
+    try {
+      const { count } = await supabaseAdmin
+        .from('jobs')
+        .select('id', { count: 'exact' });
+      totalJobs = count || 0;
+    } catch (e) { /* table might not exist */ }
 
     // Completed jobs
-    const { count: completedJobs } = await supabaseAdmin
-      .from('jobs')
-      .select('id', { count: 'exact' })
-      .eq('status', 'completed');
+    try {
+      const { count } = await supabaseAdmin
+        .from('jobs')
+        .select('id', { count: 'exact' })
+        .eq('status', 'completed');
+      completedJobs = count || 0;
+    } catch (e) { /* table might not exist */ }
 
     // Total bookings
-    const { count: totalBookings } = await supabaseAdmin
-      .from('bookings')
-      .select('id', { count: 'exact' });
+    try {
+      const { count } = await supabaseAdmin
+        .from('bookings')
+        .select('id', { count: 'exact' });
+      totalBookings = count || 0;
+    } catch (e) { /* table might not exist */ }
 
     // Pending provider applications
-    const { count: pendingProviders } = await supabaseAdmin
-      .from('provider_verification_queue')
-      .select('id', { count: 'exact' })
-      .eq('status', 'pending');
+    try {
+      const { count } = await supabaseAdmin
+        .from('provider_verification_queue')
+        .select('id', { count: 'exact' })
+        .eq('status', 'pending');
+      pendingProviders = count || 0;
+    } catch (e) { /* table might not exist */ }
 
     // Open reports
-    const { count: openReports } = await supabaseAdmin
-      .from('admin_reports')
-      .select('id', { count: 'exact' })
-      .eq('status', 'open');
+    try {
+      const { count } = await supabaseAdmin
+        .from('admin_reports')
+        .select('id', { count: 'exact' })
+        .eq('status', 'open');
+      openReports = count || 0;
+    } catch (e) { /* table might not exist */ }
 
     const completionRate = totalJobs ? ((completedJobs || 0) / (totalJobs || 1) * 100).toFixed(2) : '0';
 
     sendSuccess(res, {
       users: {
-        total: totalUsers || 0,
-        providers: totalProviders || 0,
-        activeProviders: activeProviders || 0,
+        total: totalUsers,
+        providers: totalProviders,
+        activeProviders: activeProviders,
       },
       jobs: {
-        total: totalJobs || 0,
-        completed: completedJobs || 0,
+        total: totalJobs,
+        completed: completedJobs,
         completionRate: parseFloat(completionRate as string),
       },
       bookings: {
-        total: totalBookings || 0,
+        total: totalBookings,
       },
       admin: {
-        pendingProviderApplications: pendingProviders || 0,
-        openReports: openReports || 0,
+        pendingProviderApplications: pendingProviders,
+        openReports: openReports,
       },
     });
   } catch (error: any) {
