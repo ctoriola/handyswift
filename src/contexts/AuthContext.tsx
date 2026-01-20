@@ -68,7 +68,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           id: response.data.user.id,
           full_name: response.data.user.full_name,
           email: response.data.user.email,
-          role: response.data.user.role as 'user' | 'provider',
+          role: response.data.user.role as 'user' | 'provider' | 'admin',
           membershipType: 'Free',
           specialization: response.data.user.specialization,
         };
