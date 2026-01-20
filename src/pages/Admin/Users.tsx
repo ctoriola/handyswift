@@ -343,6 +343,8 @@ export function AdminUsersPage() {
           </AlertDialog>
         )}
       </div>
+        </div>
+      </div>
     </div>
   );
 }

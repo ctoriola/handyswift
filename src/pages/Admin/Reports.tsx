@@ -361,6 +361,8 @@ export function AdminReportsPage() {
           </AlertDialog>
         )}
       </div>
+        </div>
+      </div>
     </div>
   );
 }

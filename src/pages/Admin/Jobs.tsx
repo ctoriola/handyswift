@@ -263,6 +263,8 @@ export function AdminJobsPage() {
           </AlertDialog>
         )}
       </div>
+        </div>
+      </div>
     </div>
   );
 }
