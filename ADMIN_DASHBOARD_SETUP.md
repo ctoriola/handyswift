@@ -8,9 +8,30 @@ Run these SQL commands in Supabase SQL Editor:
 
 #### 1.1 Update users table to support admin role
 ```sql
--- Add 'admin' role to the users table if not already present
--- The role field already exists, just ensure 'admin' is allowed
-ALTER TYPE user_role ADD VALUE 'admin' BEFORE 'provider';
+-- Option A: If you're using an ENUM type (run this if the enum exists)
+-- ALTER TYPE user_role ADD VALUE 'admin' BEFORE 'provider';
+
+-- Option B: If the enum doesn't exist or you're using VARCHAR (recommended - run this instead)
+-- First, check your users table structure:
+-- SELECT column_name, data_type FROM information_schema.columns WHERE table_name = 'users';
+
+-- If role is VARCHAR, just ensure 'admin' can be stored (no action needed)
+-- If role is an ENUM that doesn't exist, create it first:
+DO $$ 
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'user_role') THEN
+    CREATE TYPE user_role AS ENUM ('user', 'provider', 'admin');
+    ALTER TABLE users ALTER COLUMN role TYPE user_role USING role::user_role;
+  END IF;
+END $$;
+```
+
+**If you get an error, run this simpler version instead:**
+```sql
+-- Simply verify the role column accepts 'admin' value
+-- If role is VARCHAR, no changes needed
+-- If role is ENUM and 'admin' doesn't exist, add it:
+-- ALTER TYPE user_role ADD VALUE 'admin';
 ```
 
 #### 1.2 Create admin_reports table
@@ -132,14 +153,48 @@ See: `src/pages/Admin/` directory
 
 ---
 
+## Troubleshooting
+
+### Issue: "type 'user_role' does not exist"
+This means your `users` table uses VARCHAR for the role column instead of an ENUM type.
+
+**Solution:** Check your current schema first:
+```sql
+-- Check the role column type
+SELECT column_name, data_type FROM information_schema.columns 
+WHERE table_name = 'users' AND column_name = 'role';
+```
+
+Then run the appropriate migration:
+- If data_type is `character varying` (VARCHAR): Just run the rest of migrations (role column is fine)
+- If data_type is `user_role` (ENUM): The enum doesn't exist, so create it:
+  ```sql
+  CREATE TYPE user_role AS ENUM ('user', 'provider', 'admin');
+  ALTER TABLE users ALTER COLUMN role TYPE user_role USING role::user_role;
+  ```
+
+### Issue: "column 'is_suspended' already exists"
+The column was already added in a previous migration. This is fine - just skip that step.
+
+### Issue: "table 'admin_reports' already exists"
+The tables were already created. This is fine - the migrations are idempotent.
+
 ## Testing
 
 After implementation, test with:
 ```bash
-# Make yourself an admin (in Supabase dashboard)
+# 1. First, verify the users table structure
+SELECT column_name, data_type FROM information_schema.columns 
+WHERE table_name = 'users' AND column_name IN ('role', 'is_suspended')
+ORDER BY column_name;
+
+# 2. Make yourself an admin (in Supabase dashboard)
 UPDATE users SET role = 'admin' WHERE id = 'your-user-id';
 
-# Test admin endpoints
+# 3. Verify the update
+SELECT id, email, role FROM users WHERE id = 'your-user-id';
+
+# 4. Test admin endpoints
 curl -H "Authorization: Bearer YOUR_TOKEN" \
   http://localhost:5000/api/admin/stats
 ```
