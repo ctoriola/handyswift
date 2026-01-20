@@ -59,13 +59,13 @@ export function AdminJobsPage() {
       const token = localStorage.getItem('authToken');
       const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
-      const response = await fetch(`${apiUrl}/admin/jobs?limit=50&offset=0`, {
+      const response = await fetch(`${apiUrl}/admin/jobs?page=1&limit=50`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
       if (!response.ok) throw new Error('Failed to fetch jobs');
       const data = await response.json();
-      setJobs(data.data?.jobs || []);
+      setJobs(data.jobs || []);
     } catch (err: any) {
       setError(err.message);
     } finally {

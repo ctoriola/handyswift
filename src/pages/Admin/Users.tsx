@@ -60,13 +60,13 @@ export function AdminUsersPage() {
       const token = localStorage.getItem('authToken');
       const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
-      const response = await fetch(`${apiUrl}/admin/users?limit=50&offset=0`, {
+      const response = await fetch(`${apiUrl}/admin/users?page=1&limit=50`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
       if (!response.ok) throw new Error('Failed to fetch users');
       const data = await response.json();
-      setUsers(data.data?.users || []);
+      setUsers(data.users || []);
     } catch (err: any) {
       setError(err.message);
     } finally {

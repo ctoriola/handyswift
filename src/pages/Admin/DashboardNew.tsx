@@ -52,7 +52,7 @@ export function AdminDashboard() {
 
       if (!response.ok) throw new Error('Failed to fetch stats');
       const data = await response.json();
-      setStats(data.data);
+      setStats(data);
     } catch (err: any) {
       setError(err.message);
     } finally {

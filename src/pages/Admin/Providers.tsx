@@ -65,7 +65,7 @@ export function AdminProvidersPage() {
 
       if (!response.ok) throw new Error('Failed to fetch providers');
       const data = await response.json();
-      setProviders(data.data?.providers || []);
+      setProviders(data.providers || []);
     } catch (err: any) {
       setError(err.message);
     } finally {
