@@ -55,10 +55,6 @@ app.get('/api', (_req, res) => {
     }
   });
 });
-      health: '/health'
-    }
-  });
-});
 
 // 404 Handler
 app.use((_req, res) => {
