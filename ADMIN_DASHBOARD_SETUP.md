@@ -8,30 +8,11 @@ Run these SQL commands in Supabase SQL Editor:
 
 #### 1.1 Update users table to support admin role
 ```sql
--- Option A: If you're using an ENUM type (run this if the enum exists)
--- ALTER TYPE user_role ADD VALUE 'admin' BEFORE 'provider';
+-- Step 1: Remove the existing check constraint on the role column
+ALTER TABLE users DROP CONSTRAINT IF EXISTS users_role_check;
 
--- Option B: If the enum doesn't exist or you're using VARCHAR (recommended - run this instead)
--- First, check your users table structure:
--- SELECT column_name, data_type FROM information_schema.columns WHERE table_name = 'users';
-
--- If role is VARCHAR, just ensure 'admin' can be stored (no action needed)
--- If role is an ENUM that doesn't exist, create it first:
-DO $$ 
-BEGIN
-  IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'user_role') THEN
-    CREATE TYPE user_role AS ENUM ('user', 'provider', 'admin');
-    ALTER TABLE users ALTER COLUMN role TYPE user_role USING role::user_role;
-  END IF;
-END $$;
-```
-
-**If you get an error, run this simpler version instead:**
-```sql
--- Simply verify the role column accepts 'admin' value
--- If role is VARCHAR, no changes needed
--- If role is ENUM and 'admin' doesn't exist, add it:
--- ALTER TYPE user_role ADD VALUE 'admin';
+-- Step 2: Add the new check constraint that includes 'admin'
+ALTER TABLE users ADD CONSTRAINT users_role_check CHECK (role IN ('user', 'provider', 'admin'));
 ```
 
 #### 1.2 Create admin_reports table
