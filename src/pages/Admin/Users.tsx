@@ -48,7 +48,7 @@ export function AdminUsersPage() {
 
   useEffect(() => {
     if (!user || !isAdmin) {
-      navigate('/login');
+      navigate('/admin/login');
       return;
     }
     fetchUsers();

@@ -1,3 +1,4 @@
+export { AdminLoginPage as AdminLogin } from './AdminLogin';
 export { AdminDashboard as Dashboard } from './DashboardNew';
 export { AdminUsersPage as Users } from './Users';
 export { AdminProvidersPage as Providers } from './Providers';

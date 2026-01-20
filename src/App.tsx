@@ -39,6 +39,7 @@ export default function App() {
           <Route path="/send-offer/:jobId" element={<SendOffer />} />
           
           {/* Admin Routes */}
+          <Route path="/admin/login" element={<AdminPages.AdminLogin />} />
           <Route path="/admin" element={<AdminPages.Dashboard />} />
           <Route path="/admin/users" element={<AdminPages.Users />} />
           <Route path="/admin/providers" element={<AdminPages.Providers />} />

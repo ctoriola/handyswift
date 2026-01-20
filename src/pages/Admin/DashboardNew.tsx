@@ -34,7 +34,7 @@ export function AdminDashboard() {
 
   useEffect(() => {
     if (!user || !isAdmin) {
-      navigate('/login');
+      navigate('/admin/login');
       return;
     }
     fetchStats();

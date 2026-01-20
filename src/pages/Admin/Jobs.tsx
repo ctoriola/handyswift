@@ -47,7 +47,7 @@ export function AdminJobsPage() {
 
   useEffect(() => {
     if (!user || !isAdmin) {
-      navigate('/login');
+      navigate('/admin/login');
       return;
     }
     fetchJobs();
