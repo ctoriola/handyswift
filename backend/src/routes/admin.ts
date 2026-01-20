@@ -6,7 +6,7 @@ import { supabaseAdmin } from '../config/supabase';
 const router = Router();
 
 // Middleware: Check if user is admin
-async function isAdmin(req: AuthRequest, res: any, next: any): Promise<void> {
+async function isAdmin(req: AuthRequest, res: any, next: any): Promise<any> {
   try {
     if (!req.userId) {
       return sendError(res, 'UNAUTHORIZED', 'Not authenticated', 401);
@@ -31,7 +31,7 @@ async function isAdmin(req: AuthRequest, res: any, next: any): Promise<void> {
 // ============ ADMIN VERIFICATION ============
 
 // Get admin status
-router.get('/verify', authMiddleware, async (req: AuthRequest, res: any): Promise<void> => {
+router.get('/verify', authMiddleware, async (req: AuthRequest, res: any): Promise<any> => {
   try {
     const { data: user, error } = await supabaseAdmin
       .from('users')
@@ -59,7 +59,7 @@ router.get('/verify', authMiddleware, async (req: AuthRequest, res: any): Promis
 // ============ USER MANAGEMENT ============
 
 // Get all users with pagination and filters
-router.get('/users', authMiddleware, isAdmin, async (req: AuthRequest, res: any): Promise<void> => {
+router.get('/users', authMiddleware, isAdmin, async (req: AuthRequest, res: any): Promise<any> => {
   try {
     const { page = 1, limit = 20, role, search } = req.query;
     const offset = ((Number(page) || 1) - 1) * (Number(limit) || 20);
@@ -98,7 +98,7 @@ router.get('/users', authMiddleware, isAdmin, async (req: AuthRequest, res: any)
 });
 
 // Get user details
-router.get('/users/:userId', authMiddleware, isAdmin, async (req: AuthRequest, res: any): Promise<void> => {
+router.get('/users/:userId', authMiddleware, isAdmin, async (req: AuthRequest, res: any): Promise<any> => {
   try {
     const { userId } = req.params;
 
@@ -119,7 +119,7 @@ router.get('/users/:userId', authMiddleware, isAdmin, async (req: AuthRequest, r
 });
 
 // Suspend user
-router.put('/users/:userId/suspend', authMiddleware, isAdmin, async (req: AuthRequest, res: any): Promise<void> => {
+router.put('/users/:userId/suspend', authMiddleware, isAdmin, async (req: AuthRequest, res: any): Promise<any> => {
   try {
     const { userId } = req.params;
     const { reason } = req.body;
@@ -158,7 +158,7 @@ router.put('/users/:userId/suspend', authMiddleware, isAdmin, async (req: AuthRe
 });
 
 // Unsuspend user
-router.put('/users/:userId/unsuspend', authMiddleware, isAdmin, async (req: AuthRequest, res: any): Promise<void> => {
+router.put('/users/:userId/unsuspend', authMiddleware, isAdmin, async (req: AuthRequest, res: any): Promise<any> => {
   try {
     const { userId } = req.params;
 
@@ -193,7 +193,7 @@ router.put('/users/:userId/unsuspend', authMiddleware, isAdmin, async (req: Auth
 // ============ PROVIDER MANAGEMENT ============
 
 // Get all providers
-router.get('/providers', authMiddleware, isAdmin, async (req: AuthRequest, res: any): Promise<void> => {
+router.get('/providers', authMiddleware, isAdmin, async (req: AuthRequest, res: any): Promise<any> => {
   try {
     const { page = 1, limit = 20, status } = req.query;
     const offset = ((Number(page) || 1) - 1) * (Number(limit) || 20);
@@ -231,7 +231,7 @@ router.get('/providers', authMiddleware, isAdmin, async (req: AuthRequest, res: 
 });
 
 // Get pending provider applications
-router.get('/providers/pending', authMiddleware, isAdmin, async (_req: AuthRequest, res: any): Promise<void> => {
+router.get('/providers/pending', authMiddleware, isAdmin, async (_req: AuthRequest, res: any): Promise<any> => {
   try {
     const { data: pending, error } = await supabaseAdmin
       .from('provider_verification_queue')
@@ -259,7 +259,7 @@ router.get('/providers/pending', authMiddleware, isAdmin, async (_req: AuthReque
 });
 
 // Approve provider
-router.put('/providers/:providerId/approve', authMiddleware, isAdmin, async (req: AuthRequest, res: any): Promise<void> => {
+router.put('/providers/:providerId/approve', authMiddleware, isAdmin, async (req: AuthRequest, res: any): Promise<any> => {
   try {
     const { providerId } = req.params;
 
@@ -302,7 +302,7 @@ router.put('/providers/:providerId/approve', authMiddleware, isAdmin, async (req
 });
 
 // Reject provider
-router.put('/providers/:providerId/reject', authMiddleware, isAdmin, async (req: AuthRequest, res: any): Promise<void> => {
+router.put('/providers/:providerId/reject', authMiddleware, isAdmin, async (req: AuthRequest, res: any): Promise<any> => {
   try {
     const { providerId } = req.params;
     const { reason } = req.body;
@@ -344,7 +344,7 @@ router.put('/providers/:providerId/reject', authMiddleware, isAdmin, async (req:
 // ============ JOBS & BOOKINGS OVERVIEW ============
 
 // Get all jobs with status
-router.get('/jobs', authMiddleware, isAdmin, async (req: AuthRequest, res: any): Promise<void> => {
+router.get('/jobs', authMiddleware, isAdmin, async (req: AuthRequest, res: any): Promise<any> => {
   try {
     const { page = 1, limit = 20, status } = req.query;
     const offset = ((Number(page) || 1) - 1) * (Number(limit) || 20);
@@ -379,7 +379,7 @@ router.get('/jobs', authMiddleware, isAdmin, async (req: AuthRequest, res: any):
 });
 
 // Get all bookings with status
-router.get('/bookings', authMiddleware, isAdmin, async (req: AuthRequest, res: any): Promise<void> => {
+router.get('/bookings', authMiddleware, isAdmin, async (req: AuthRequest, res: any): Promise<any> => {
   try {
     const { page = 1, limit = 20, status } = req.query;
     const offset = ((Number(page) || 1) - 1) * (Number(limit) || 20);
@@ -416,7 +416,7 @@ router.get('/bookings', authMiddleware, isAdmin, async (req: AuthRequest, res: a
 // ============ ANALYTICS ============
 
 // Get platform statistics
-router.get('/stats', authMiddleware, isAdmin, async (_req: AuthRequest, res: any): Promise<void> => {
+router.get('/stats', authMiddleware, isAdmin, async (_req: AuthRequest, res: any): Promise<any> => {
   try {
     let totalUsers = 0;
     let totalProviders = 0;
@@ -526,7 +526,7 @@ router.get('/stats', authMiddleware, isAdmin, async (_req: AuthRequest, res: any
 // ============ REPORTS & DISPUTES ============
 
 // Get all reports
-router.get('/reports', authMiddleware, isAdmin, async (req: AuthRequest, res: any): Promise<void> => {
+router.get('/reports', authMiddleware, isAdmin, async (req: AuthRequest, res: any): Promise<any> => {
   try {
     const { status = 'open', page = 1, limit = 20 } = req.query;
     const offset = ((Number(page) || 1) - 1) * (Number(limit) || 20);
@@ -569,7 +569,7 @@ router.get('/reports', authMiddleware, isAdmin, async (req: AuthRequest, res: an
 });
 
 // Resolve report
-router.put('/reports/:reportId/resolve', authMiddleware, isAdmin, async (req: AuthRequest, res: any): Promise<void> => {
+router.put('/reports/:reportId/resolve', authMiddleware, isAdmin, async (req: AuthRequest, res: any): Promise<any> => {
   try {
     const { reportId } = req.params;
     const { resolution, action } = req.body; // action: 'suspend_user', 'dismiss', 'note_issue'
