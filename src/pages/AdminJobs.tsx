@@ -37,13 +37,16 @@ const statusColors: Record<Job['status'], string> = {
 
 export function AdminJobs() {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, isInitializing } = useAuth();
   const [jobs, setJobs] = useState<Job[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
+    if (isInitializing) {
+      return; // Wait for auth to initialize
+    }
     if (!user) {
       navigate('/login');
       return;

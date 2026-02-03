@@ -20,6 +20,7 @@ interface AuthContextType {
   isAuthenticated: boolean;
   isProvider: boolean;
   loading: boolean;
+  isInitializing: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -43,6 +44,7 @@ const generateMockToken = (user: User): string => {
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(false);
+  const [isInitializing, setIsInitializing] = useState(true);
 
   // Check if user is already logged in (from localStorage)
   useEffect(() => {
@@ -55,6 +57,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         console.error('Failed to parse stored user', e);
       }
     }
+    setIsInitializing(false);
   }, []);
 
   const login = async (email: string, password: string): Promise<boolean> => {
@@ -102,7 +105,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       logout, 
       isAuthenticated: !!user,
       isProvider: user?.role === 'provider',
-      loading
+      loading,
+      isInitializing
     }}>
       {children}
     </AuthContext.Provider>

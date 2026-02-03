@@ -37,13 +37,16 @@ const statusColors: Record<Booking['status'], string> = {
 
 export function AdminBookings() {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, isInitializing } = useAuth();
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
+    if (isInitializing) {
+      return; // Wait for auth to initialize
+    }
     if (!user) {
       navigate('/login');
       return;

@@ -30,18 +30,21 @@ interface Provider {
 
 export function AdminProviders() {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, isInitializing } = useAuth();
   const [providers, setProviders] = useState<Provider[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
+    if (isInitializing) {
+      return; // Wait for auth to initialize
+    }
     if (!user) {
       navigate('/login');
       return;
     }
-  }, [user, navigate]);
+  }, [user, isInitializing, navigate]);
 
   useEffect(() => {
     const fetchProviders = async () => {

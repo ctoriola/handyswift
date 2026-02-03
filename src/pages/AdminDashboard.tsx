@@ -23,19 +23,22 @@ const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899'
 
 export function AdminDashboard() {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, isInitializing } = useAuth();
   const [stats, setStats] = useState<AdminStats | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
-  // Verify admin access
+  // Verify admin access - wait for auth initialization
   useEffect(() => {
+    if (isInitializing) {
+      return; // Wait for auth to initialize
+    }
     if (!user) {
       navigate('/login');
       return;
     }
     // TODO: Add admin role check when implemented
-  }, [user, navigate]);
+  }, [user, isInitializing, navigate]);
 
   // Fetch admin statistics
   useEffect(() => {
