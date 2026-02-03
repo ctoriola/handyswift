@@ -108,12 +108,12 @@ export function AdminDashboard() {
         <AdminHeader title="Dashboard" description="Platform overview and analytics" />
         <div className="flex-1 overflow-auto pt-20 pb-12 px-8">
           <div className="container mx-auto max-w-7xl">
-          {error && <div className="bg-red-50 text-red-600 p-4 rounded-lg mb-4">{error}</div>}
+            {error && <div className="bg-red-50 text-red-600 p-4 rounded-lg mb-4">{error}</div>}
 
-          {/* Key Metrics Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
+            {/* Key Metrics Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
           {/* Total Users */}
-          <Card className="hover:shadow-lg transition-shadow">
+            <Card className="hover:shadow-lg transition-shadow">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium text-slate-600">Total Users</CardTitle>
               <Users className="h-5 w-5 text-blue-500" />
@@ -122,10 +122,10 @@ export function AdminDashboard() {
               <div className="text-3xl font-bold text-slate-900">{stats.totalUsers}</div>
               <p className="text-xs text-slate-500 mt-1">Including providers</p>
             </CardContent>
-          </Card>
+            </Card>
 
-          {/* Total Providers */}
-          <Card className="hover:shadow-lg transition-shadow">
+            {/* Total Providers */}
+            <Card className="hover:shadow-lg transition-shadow">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium text-slate-600">Providers</CardTitle>
               <Briefcase className="h-5 w-5 text-emerald-500" />
@@ -134,10 +134,10 @@ export function AdminDashboard() {
               <div className="text-3xl font-bold text-slate-900">{stats.totalProviders}</div>
               <p className="text-xs text-slate-500 mt-1">Active professionals</p>
             </CardContent>
-          </Card>
+            </Card>
 
-          {/* Total Bookings */}
-          <Card className="hover:shadow-lg transition-shadow">
+            {/* Total Bookings */}
+            <Card className="hover:shadow-lg transition-shadow">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium text-slate-600">Bookings</CardTitle>
               <Calendar className="h-5 w-5 text-amber-500" />
@@ -146,10 +146,10 @@ export function AdminDashboard() {
               <div className="text-3xl font-bold text-slate-900">{stats.totalBookings}</div>
               <p className="text-xs text-slate-500 mt-1">{stats.completedBookings} completed</p>
             </CardContent>
-          </Card>
+            </Card>
 
-          {/* Active Jobs */}
-          <Card className="hover:shadow-lg transition-shadow">
+            {/* Active Jobs */}
+            <Card className="hover:shadow-lg transition-shadow">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium text-slate-600">Active Jobs</CardTitle>
               <FileText className="h-5 w-5 text-purple-500" />
@@ -158,10 +158,10 @@ export function AdminDashboard() {
               <div className="text-3xl font-bold text-slate-900">{stats.activeJobs}</div>
               <p className="text-xs text-slate-500 mt-1">Out of {stats.totalJobs} total</p>
             </CardContent>
-          </Card>
+            </Card>
 
-          {/* Growth Indicator */}
-          <Card className="hover:shadow-lg transition-shadow">
+            {/* Growth Indicator */}
+            <Card className="hover:shadow-lg transition-shadow">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium text-slate-600">Conversion</CardTitle>
               <TrendingUp className="h-5 w-5 text-pink-500" />
@@ -172,19 +172,18 @@ export function AdminDashboard() {
               </div>
               <p className="text-xs text-slate-500 mt-1">Job completion rate</p>
             </CardContent>
-          </Card>
-        </div>
+            </Card>
+            </div>
 
-        {/* Charts Section */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-          {/* Users by Role */}
-          <Card>
+            {/* Charts Section */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+              {/* Users by Role */}
+              <Card>
             <CardHeader>
               <CardTitle>Users by Role</CardTitle>
               <CardDescription>Distribution of user types</CardDescription>
             </CardHeader>
             <CardContent className="h-80">
-              <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
                   <Pie
                     data={stats.usersByRole}
@@ -263,69 +262,70 @@ export function AdminDashboard() {
               </ResponsiveContainer>
             </CardContent>
           </Card>
-        </div>
+            </div>
 
-        {/* Data Management Links */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          <Card 
-            className="cursor-pointer hover:shadow-lg transition-shadow"
-            onClick={() => navigate('/admin/users')}
-          >
-            <CardHeader>
-              <CardTitle className="text-lg flex items-center gap-2">
-                <Users className="h-5 w-5" />
-                Manage Users
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-slate-600">{stats.totalUsers} users registered</p>
+            {/* Data Management Links */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              <Card 
+                className="cursor-pointer hover:shadow-lg transition-shadow"
+                onClick={() => navigate('/admin/users')}
+              >
+                <CardHeader>
+                  <CardTitle className="text-lg flex items-center gap-2">
+                    <Users className="h-5 w-5" />
+                    Manage Users
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm text-slate-600">{stats.totalUsers} users registered</p>
+                </CardContent>
+              </Card>
+
+              <Card 
+                className="cursor-pointer hover:shadow-lg transition-shadow"
+                onClick={() => navigate('/admin/providers')}
+              >
+                <CardHeader>
+                  <CardTitle className="text-lg flex items-center gap-2">
+                    <Briefcase className="h-5 w-5" />
+                    Manage Providers
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm text-slate-600">{stats.totalProviders} providers active</p>
+                </CardContent>
+              </Card>
+
+              <Card 
+                className="cursor-pointer hover:shadow-lg transition-shadow"
+                onClick={() => navigate('/admin/bookings')}
+              >
+                <CardHeader>
+                  <CardTitle className="text-lg flex items-center gap-2">
+                    <Calendar className="h-5 w-5" />
+                    Manage Bookings
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm text-slate-600">{stats.totalBookings} total bookings</p>
             </CardContent>
           </Card>
 
-          <Card 
-            className="cursor-pointer hover:shadow-lg transition-shadow"
-            onClick={() => navigate('/admin/providers')}
-          >
-            <CardHeader>
-              <CardTitle className="text-lg flex items-center gap-2">
-                <Briefcase className="h-5 w-5" />
-                Manage Providers
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-slate-600">{stats.totalProviders} providers active</p>
-            </CardContent>
-          </Card>
-
-          <Card 
-            className="cursor-pointer hover:shadow-lg transition-shadow"
-            onClick={() => navigate('/admin/bookings')}
-          >
-            <CardHeader>
-              <CardTitle className="text-lg flex items-center gap-2">
-                <Calendar className="h-5 w-5" />
-                Manage Bookings
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-slate-600">{stats.totalBookings} total bookings</p>
-            </CardContent>
-          </Card>
-
-          <Card 
-            className="cursor-pointer hover:shadow-lg transition-shadow"
-            onClick={() => navigate('/admin/jobs')}
-          >
-            <CardHeader>
-              <CardTitle className="text-lg flex items-center gap-2">
-                <FileText className="h-5 w-5" />
-                Manage Jobs
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-slate-600">{stats.activeJobs} active jobs</p>
-            </CardContent>
-          </Card>
+            <Card 
+              className="cursor-pointer hover:shadow-lg transition-shadow"
+              onClick={() => navigate('/admin/jobs')}
+            >
+              <CardHeader>
+                <CardTitle className="text-lg flex items-center gap-2">
+                  <FileText className="h-5 w-5" />
+                  Manage Jobs
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-sm text-slate-600">{stats.activeJobs} active jobs</p>
+              </CardContent>
+            </Card>
+            </div>
           </div>
         </div>
       </div>
