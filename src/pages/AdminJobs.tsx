@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { AdminSidebar } from '../components/AdminSidebar';
+import { AdminHeader } from '../components/AdminHeader';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
@@ -159,23 +161,12 @@ export function AdminJobs() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 pt-24 pb-12">
-      <div className="container mx-auto px-4 max-w-7xl">
-        {/* Header */}
-        <div className="mb-8 flex justify-between items-center">
-          <div>
-            <h1 className="text-3xl font-bold text-slate-900 mb-2">Manage Jobs</h1>
-            <p className="text-slate-600">View and manage all posted jobs</p>
-          </div>
-          <Button 
-            onClick={() => navigate('/admin')}
-            variant="outline"
-          >
-            Back to Dashboard
-          </Button>
-        </div>
-
-        {error && <div className="bg-red-50 text-red-600 p-4 rounded-lg mb-4">{error}</div>}
+    <div className="min-h-screen bg-slate-50">
+      <AdminSidebar />
+      <AdminHeader title="Jobs" description="View and manage all posted jobs" />
+      <div className="ml-64 pt-20 pb-12 px-8">
+        <div className="container mx-auto max-w-7xl">
+          {error && <div className="bg-red-50 text-red-600 p-4 rounded-lg mb-4">{error}</div>}
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">

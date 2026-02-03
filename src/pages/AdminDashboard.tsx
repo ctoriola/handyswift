@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { AdminSidebar } from '../components/AdminSidebar';
+import { AdminHeader } from '../components/AdminHeader';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts';
 import { Users, Briefcase, Calendar, FileText, TrendingUp } from 'lucide-react';
@@ -97,15 +99,14 @@ export function AdminDashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 pt-24 pb-12">
-      <div className="container mx-auto px-4 max-w-7xl">
-        {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold text-slate-900 mb-2">Admin Dashboard</h1>
-          <p className="text-slate-600">Platform overview and analytics</p>
-        </div>
+    <div className="min-h-screen bg-slate-50">
+      <AdminSidebar />
+      <AdminHeader title="Dashboard" description="Platform overview and analytics" />
+      <div className="ml-64 pt-20 pb-12 px-8">
+        <div className="container mx-auto max-w-7xl">
+          {error && <div className="bg-red-50 text-red-600 p-4 rounded-lg mb-4">{error}</div>}
 
-        {/* Key Metrics Cards */}
+          {/* Key Metrics Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
           {/* Total Users */}
           <Card className="hover:shadow-lg transition-shadow">
