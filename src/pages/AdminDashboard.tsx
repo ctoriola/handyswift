@@ -326,8 +326,8 @@ export function AdminDashboard() {
               <p className="text-sm text-slate-600">{stats.activeJobs} active jobs</p>
             </CardContent>
           </Card>
+          </div>
         </div>
-
       </div>
     </div>
   );
