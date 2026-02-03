@@ -291,6 +291,7 @@ export function AdminBookings() {
             </div>
           </CardContent>
         </Card>
+        </div>
       </div>
     </div>
   );

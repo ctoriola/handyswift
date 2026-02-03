@@ -219,6 +219,7 @@ export function AdminUsers() {
             </div>
           </CardContent>
         </Card>
+        </div>
       </div>
     </div>
   );

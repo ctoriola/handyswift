@@ -311,6 +311,7 @@ export function AdminJobs() {
             </div>
           </CardContent>
         </Card>
+        </div>
       </div>
     </div>
   );

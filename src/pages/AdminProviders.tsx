@@ -243,6 +243,7 @@ export function AdminProviders() {
             </div>
           </CardContent>
         </Card>
+        </div>
       </div>
     </div>
   );
