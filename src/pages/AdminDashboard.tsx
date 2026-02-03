@@ -326,7 +326,6 @@ export function AdminDashboard() {
               </CardContent>
             </Card>
             </div>
-            </div>
           </div>
         </div>
       </div>
