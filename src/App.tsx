@@ -13,7 +13,11 @@ import { ProviderDashboard } from './pages/ProviderDashboard';
 import { ProviderJobs } from './pages/ProviderJobs';
 import { ProviderProfileEdit } from './pages/ProviderProfileEdit';
 import { SendOffer } from './pages/SendOffer';
-import * as AdminPages from './pages/Admin';
+import { AdminDashboard } from './pages/AdminDashboard';
+import { AdminUsers } from './pages/AdminUsers';
+import { AdminProviders } from './pages/AdminProviders';
+import { AdminBookings } from './pages/AdminBookings';
+import { AdminJobs } from './pages/AdminJobs';
 import { ScrollToTop } from './components/ScrollToTop';
 import { AuthProvider } from './contexts/AuthContext';
 
@@ -37,15 +41,12 @@ export default function App() {
           <Route path="/provider-jobs" element={<ProviderJobs />} />
           <Route path="/provider-profile-edit" element={<ProviderProfileEdit />} />
           <Route path="/send-offer/:jobId" element={<SendOffer />} />
-          
           {/* Admin Routes */}
-          <Route path="/admin/login" element={<AdminPages.AdminLogin />} />
-          <Route path="/admin" element={<AdminPages.Dashboard />} />
-          <Route path="/admin/users" element={<AdminPages.Users />} />
-          <Route path="/admin/providers" element={<AdminPages.Providers />} />
-          <Route path="/admin/jobs" element={<AdminPages.Jobs />} />
-          <Route path="/admin/reports" element={<AdminPages.Reports />} />
-          
+          <Route path="/admin" element={<AdminDashboard />} />
+          <Route path="/admin/users" element={<AdminUsers />} />
+          <Route path="/admin/providers" element={<AdminProviders />} />
+          <Route path="/admin/bookings" element={<AdminBookings />} />
+          <Route path="/admin/jobs" element={<AdminJobs />} />
           {/* Catch-all route for unmatched paths */}
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>

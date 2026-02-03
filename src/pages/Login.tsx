@@ -31,7 +31,9 @@ export function Login() {
           if (storedUser) {
             const user = JSON.parse(storedUser);
             // Redirect based on role
-            if (user.role === 'provider') {
+            if (user.role === 'admin') {
+              navigate("/admin");
+            } else if (user.role === 'provider') {
               navigate("/provider-dashboard");
             } else {
               navigate("/user-dashboard");

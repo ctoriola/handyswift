@@ -1,0 +1,231 @@
+import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
+import { Button } from '../components/ui/button';
+import { Input } from '../components/ui/input';
+import { 
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '../components/ui/table';
+import { Trash2, Mail, Phone, Calendar } from 'lucide-react';
+
+interface User {
+  id: string;
+  email: string;
+  full_name: string;
+  phone_number?: string;
+  role: 'user' | 'provider';
+  created_at: string;
+  updated_at?: string;
+}
+
+export function AdminUsers() {
+  const navigate = useNavigate();
+  const { user } = useAuth();
+  const [users, setUsers] = useState<User[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [searchTerm, setSearchTerm] = useState('');
+
+  useEffect(() => {
+    if (!user) {
+      navigate('/login');
+      return;
+    }
+  }, [user, navigate]);
+
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        setLoading(true);
+        const token = localStorage.getItem('authToken');
+        if (!token) {
+          navigate('/login');
+          return;
+        }
+
+        // Mock data - replace with actual API call
+        setUsers([
+          {
+            id: '1',
+            email: 'john.doe@example.com',
+            full_name: 'John Doe',
+            phone_number: '555-0101',
+            role: 'user',
+            created_at: '2025-12-01T10:00:00Z',
+          },
+          {
+            id: '2',
+            email: 'jane.smith@example.com',
+            full_name: 'Jane Smith',
+            phone_number: '555-0102',
+            role: 'provider',
+            created_at: '2025-12-05T14:30:00Z',
+          },
+          {
+            id: '3',
+            email: 'bob.wilson@example.com',
+            full_name: 'Bob Wilson',
+            phone_number: '555-0103',
+            role: 'user',
+            created_at: '2025-12-10T09:15:00Z',
+          },
+          {
+            id: '4',
+            email: 'alice.johnson@example.com',
+            full_name: 'Alice Johnson',
+            phone_number: '555-0104',
+            role: 'provider',
+            created_at: '2025-12-15T11:45:00Z',
+          },
+        ]);
+      } catch (err) {
+        console.error('Error fetching users:', err);
+        setError('Failed to load users');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUsers();
+  }, [navigate]);
+
+  const filteredUsers = users.filter(u =>
+    u.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    u.full_name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const handleDeleteUser = async (userId: string) => {
+    if (window.confirm('Are you sure you want to delete this user?')) {
+      setUsers(users.filter(u => u.id !== userId));
+      // TODO: Add API call to delete user
+    }
+  };
+
+  if (loading) {
+    return <div className="flex items-center justify-center min-h-screen">Loading users...</div>;
+  }
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 pt-24 pb-12">
+      <div className="container mx-auto px-4 max-w-6xl">
+        {/* Header */}
+        <div className="mb-8 flex justify-between items-center">
+          <div>
+            <h1 className="text-3xl font-bold text-slate-900 mb-2">Manage Users</h1>
+            <p className="text-slate-600">View and manage all registered users</p>
+          </div>
+          <Button 
+            onClick={() => navigate('/admin')}
+            variant="outline"
+          >
+            Back to Dashboard
+          </Button>
+        </div>
+
+        {error && <div className="bg-red-50 text-red-600 p-4 rounded-lg mb-4">{error}</div>}
+
+        {/* Search Bar */}
+        <Card className="mb-6">
+          <CardHeader>
+            <CardTitle>Search Users</CardTitle>
+            <CardDescription>Filter by name or email</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Input
+              placeholder="Search by name or email..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="max-w-md"
+            />
+          </CardContent>
+        </Card>
+
+        {/* Users Table */}
+        <Card>
+          <CardHeader>
+            <CardTitle>All Users ({filteredUsers.length})</CardTitle>
+            <CardDescription>Total registered users across the platform</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Name</TableHead>
+                    <TableHead>Email</TableHead>
+                    <TableHead>Phone</TableHead>
+                    <TableHead>Role</TableHead>
+                    <TableHead>Joined</TableHead>
+                    <TableHead className="text-right">Actions</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {filteredUsers.length > 0 ? (
+                    filteredUsers.map((u) => (
+                      <TableRow key={u.id} className="hover:bg-slate-50">
+                        <TableCell className="font-medium">{u.full_name}</TableCell>
+                        <TableCell>
+                          <div className="flex items-center gap-2">
+                            <Mail className="h-4 w-4 text-slate-400" />
+                            {u.email}
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          {u.phone_number ? (
+                            <div className="flex items-center gap-2">
+                              <Phone className="h-4 w-4 text-slate-400" />
+                              {u.phone_number}
+                            </div>
+                          ) : (
+                            <span className="text-slate-400">N/A</span>
+                          )}
+                        </TableCell>
+                        <TableCell>
+                          <span className={`px-3 py-1 rounded-full text-sm font-medium ${
+                            u.role === 'provider'
+                              ? 'bg-blue-100 text-blue-800'
+                              : 'bg-gray-100 text-gray-800'
+                          }`}>
+                            {u.role === 'provider' ? 'Provider' : 'User'}
+                          </span>
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex items-center gap-2">
+                            <Calendar className="h-4 w-4 text-slate-400" />
+                            {new Date(u.created_at).toLocaleDateString()}
+                          </div>
+                        </TableCell>
+                        <TableCell className="text-right">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleDeleteUser(u.id)}
+                            className="text-red-600 hover:text-red-700"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  ) : (
+                    <TableRow>
+                      <TableCell colSpan={6} className="text-center text-slate-500 py-8">
+                        No users found
+                      </TableCell>
+                    </TableRow>
+                  )}
+                </TableBody>
+              </Table>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  );
+}
