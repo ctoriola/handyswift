@@ -117,11 +117,12 @@ export function AdminUsers() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="flex min-h-screen bg-slate-50">
       <AdminSidebar />
-      <AdminHeader title="Users" description="Manage all registered users" />
-      <div className="ml-64 pt-20 pb-12 px-8">
-        <div className="container mx-auto max-w-6xl">
+      <div className="flex-1 flex flex-col">
+        <AdminHeader title="Users" description="Manage all registered users" />
+        <div className="flex-1 overflow-auto pt-20 pb-12 px-8">
+          <div className="container mx-auto max-w-6xl">
           {error && <div className="bg-red-50 text-red-600 p-4 rounded-lg mb-4">{error}</div>}
 
         {/* Search Bar */}
@@ -219,6 +220,7 @@ export function AdminUsers() {
             </div>
           </CardContent>
         </Card>
+          </div>
         </div>
       </div>
     </div>

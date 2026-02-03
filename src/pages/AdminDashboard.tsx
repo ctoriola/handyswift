@@ -102,11 +102,12 @@ export function AdminDashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="flex min-h-screen bg-slate-50">
       <AdminSidebar />
-      <AdminHeader title="Dashboard" description="Platform overview and analytics" />
-      <div className="ml-64 pt-20 pb-12 px-8">
-        <div className="container mx-auto max-w-7xl">
+      <div className="flex-1 flex flex-col">
+        <AdminHeader title="Dashboard" description="Platform overview and analytics" />
+        <div className="flex-1 overflow-auto pt-20 pb-12 px-8">
+          <div className="container mx-auto max-w-7xl">
           {error && <div className="bg-red-50 text-red-600 p-4 rounded-lg mb-4">{error}</div>}
 
           {/* Key Metrics Cards */}
@@ -326,7 +327,7 @@ export function AdminDashboard() {
             </CardContent>
           </Card>
         </div>
-        </div>
+
       </div>
     </div>
   );
