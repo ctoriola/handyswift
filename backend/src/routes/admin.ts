@@ -27,44 +27,43 @@ const adminMiddleware = async (req: AuthRequest, res: any, next: any) => {
 // Get Admin Statistics
 router.get('/stats', authMiddleware, adminMiddleware, async (_req: AuthRequest, res) => {
   try {
-    // Get total users
+    // Get total users count
     const { count: totalUsersCount } = await supabaseAdmin
       .from('users')
-      .select('*', { count: 'exact' })
-      .eq('role', 'user');
+      .select('id', { count: 'exact', head: true });
 
-    // Get total providers
+    // Get total providers count
     const { count: totalProvidersCount } = await supabaseAdmin
       .from('users')
-      .select('*', { count: 'exact' })
+      .select('id', { count: 'exact', head: true })
       .eq('role', 'provider');
 
-    // Get total bookings
+    // Get total bookings count
     const { count: totalBookingsCount } = await supabaseAdmin
       .from('bookings')
-      .select('*', { count: 'exact' });
+      .select('id', { count: 'exact', head: true });
 
-    // Get completed bookings
+    // Get completed bookings count
     const { count: completedBookingsCount } = await supabaseAdmin
       .from('bookings')
-      .select('*', { count: 'exact' })
+      .select('id', { count: 'exact', head: true })
       .eq('status', 'completed');
 
-    // Get total jobs
+    // Get total jobs count
     const { count: totalJobsCount } = await supabaseAdmin
       .from('jobs')
-      .select('*', { count: 'exact' });
+      .select('id', { count: 'exact', head: true });
 
-    // Get active jobs
+    // Get active jobs count
     const { count: activeJobsCount } = await supabaseAdmin
       .from('jobs')
-      .select('*', { count: 'exact' })
+      .select('id', { count: 'exact', head: true })
       .eq('status', 'active');
 
     // Get users by role
     const { data: users } = await supabaseAdmin
       .from('users')
-      .select('role', { count: 'exact' });
+      .select('role');
 
     const regularUsers = (users || []).filter((u: any) => u.role === 'user').length;
     const providers = (users || []).filter((u: any) => u.role === 'provider').length;
@@ -72,7 +71,7 @@ router.get('/stats', authMiddleware, adminMiddleware, async (_req: AuthRequest, 
     // Get bookings by status
     const { data: bookings } = await supabaseAdmin
       .from('bookings')
-      .select('status', { count: 'exact' });
+      .select('status');
 
     const bookingsByStatus = [
       { name: 'Completed', value: completedBookingsCount || 0 },
@@ -89,7 +88,7 @@ router.get('/stats', authMiddleware, adminMiddleware, async (_req: AuthRequest, 
     // Get jobs by category
     const { data: jobsList } = await supabaseAdmin
       .from('jobs')
-      .select('category', { count: 'exact' });
+      .select('category');
 
     const categories: { [key: string]: number } = {};
     (jobsList || []).forEach((job: any) => {
@@ -126,13 +125,13 @@ router.get('/stats', authMiddleware, adminMiddleware, async (_req: AuthRequest, 
 // Get All Users
 router.get('/users', authMiddleware, adminMiddleware, async (req: AuthRequest, res) => {
   try {
-    const { search = '', limit = 50, offset = 0 } = req.query;
+    const { search = '', limit = '50', offset = '0' } = req.query;
 
     let query = supabaseAdmin
       .from('users')
-      .select('id, email, full_name, phone_number, role, created_at, updated_at');
+      .select('id, email, full_name, phone_number, role, created_at, updated_at', { count: 'exact' });
 
-    if (search) {
+    if (search && search !== '') {
       query = query.or(`email.ilike.%${search}%,full_name.ilike.%${search}%`);
     }
 
@@ -141,10 +140,11 @@ router.get('/users', authMiddleware, adminMiddleware, async (req: AuthRequest, r
       .range(Number(offset), Number(offset) + Number(limit) - 1);
 
     if (error) {
+      console.error('Database error:', error);
       return sendError(res, 'DATABASE_ERROR', error.message, 500);
     }
 
-    return sendSuccess(res, { users, count, limit, offset });
+    return sendSuccess(res, { users: users || [], count: count || 0, limit, offset });
   } catch (error) {
     console.error('Get users error:', error);
     return sendError(res, 'SERVER_ERROR', 'Failed to fetch users', 500);
@@ -154,20 +154,14 @@ router.get('/users', authMiddleware, adminMiddleware, async (req: AuthRequest, r
 // Get All Providers
 router.get('/providers', authMiddleware, adminMiddleware, async (req: AuthRequest, res) => {
   try {
-    const { search = '', limit = 50, offset = 0 } = req.query;
+    const { search = '', limit = '50', offset = '0' } = req.query;
 
     let query = supabaseAdmin
       .from('users')
-      .select(`
-        id,
-        email,
-        full_name,
-        phone_number,
-        created_at
-      `)
+      .select('id, email, full_name, phone_number, created_at', { count: 'exact' })
       .eq('role', 'provider');
 
-    if (search) {
+    if (search && search !== '') {
       query = query.or(`email.ilike.%${search}%,full_name.ilike.%${search}%`);
     }
 
@@ -176,6 +170,7 @@ router.get('/providers', authMiddleware, adminMiddleware, async (req: AuthReques
       .range(Number(offset), Number(offset) + Number(limit) - 1);
 
     if (error) {
+      console.error('Database error:', error);
       return sendError(res, 'DATABASE_ERROR', error.message, 500);
     }
 
@@ -185,7 +180,7 @@ router.get('/providers', authMiddleware, adminMiddleware, async (req: AuthReques
         // Get jobs count
         const { count: jobsCount } = await supabaseAdmin
           .from('jobs')
-          .select('*', { count: 'exact' })
+          .select('id', { count: 'exact', head: true })
           .eq('user_id', provider.id);
 
         // Get average rating from bookings if they exist
@@ -214,7 +209,7 @@ router.get('/providers', authMiddleware, adminMiddleware, async (req: AuthReques
       })
     );
 
-    return sendSuccess(res, { providers: enrichedProviders, count, limit, offset });
+    return sendSuccess(res, { providers: enrichedProviders, count: count || 0, limit, offset });
   } catch (error) {
     console.error('Get providers error:', error);
     return sendError(res, 'SERVER_ERROR', 'Failed to fetch providers', 500);
@@ -224,7 +219,7 @@ router.get('/providers', authMiddleware, adminMiddleware, async (req: AuthReques
 // Get All Bookings
 router.get('/bookings', authMiddleware, adminMiddleware, async (req: AuthRequest, res) => {
   try {
-    const { status, limit = 50, offset = 0 } = req.query;
+    const { status, limit = '50', offset = '0' } = req.query;
 
     let query = supabaseAdmin
       .from('bookings')
@@ -237,9 +232,9 @@ router.get('/bookings', authMiddleware, adminMiddleware, async (req: AuthRequest
         created_at,
         users:user_id(id, full_name),
         providers:provider_id(id, user_id, users:user_id(id, full_name))
-      `);
+      `, { count: 'exact' });
 
-    if (status) {
+    if (status && status !== '') {
       query = query.eq('status', status);
     }
 
@@ -248,6 +243,7 @@ router.get('/bookings', authMiddleware, adminMiddleware, async (req: AuthRequest
       .range(Number(offset), Number(offset) + Number(limit) - 1);
 
     if (error) {
+      console.error('Database error:', error);
       return sendError(res, 'DATABASE_ERROR', error.message, 500);
     }
 
@@ -263,7 +259,7 @@ router.get('/bookings', authMiddleware, adminMiddleware, async (req: AuthRequest
       status: booking.status,
     }));
 
-    return sendSuccess(res, { bookings: formattedBookings, count, limit, offset });
+    return sendSuccess(res, { bookings: formattedBookings, count: count || 0, limit, offset });
   } catch (error) {
     console.error('Get bookings error:', error);
     return sendError(res, 'SERVER_ERROR', 'Failed to fetch bookings', 500);
@@ -273,7 +269,7 @@ router.get('/bookings', authMiddleware, adminMiddleware, async (req: AuthRequest
 // Get All Jobs
 router.get('/jobs', authMiddleware, adminMiddleware, async (req: AuthRequest, res) => {
   try {
-    const { status, limit = 50, offset = 0 } = req.query;
+    const { status, limit = '50', offset = '0' } = req.query;
 
     let query = supabaseAdmin
       .from('jobs')
@@ -286,9 +282,9 @@ router.get('/jobs', authMiddleware, adminMiddleware, async (req: AuthRequest, re
         status,
         created_at,
         users:user_id(id, full_name)
-      `);
+      `, { count: 'exact' });
 
-    if (status) {
+    if (status && status !== '') {
       query = query.eq('status', status);
     }
 
@@ -297,6 +293,7 @@ router.get('/jobs', authMiddleware, adminMiddleware, async (req: AuthRequest, re
       .range(Number(offset), Number(offset) + Number(limit) - 1);
 
     if (error) {
+      console.error('Database error:', error);
       return sendError(res, 'DATABASE_ERROR', error.message, 500);
     }
 
@@ -305,7 +302,7 @@ router.get('/jobs', authMiddleware, adminMiddleware, async (req: AuthRequest, re
       (jobs || []).map(async (job: any) => {
         const { count: offersCount } = await supabaseAdmin
           .from('offers')
-          .select('*', { count: 'exact' })
+          .select('id', { count: 'exact', head: true })
           .eq('job_id', job.id);
 
         return {
@@ -322,7 +319,7 @@ router.get('/jobs', authMiddleware, adminMiddleware, async (req: AuthRequest, re
       })
     );
 
-    return sendSuccess(res, { jobs: formattedJobs, count, limit, offset });
+    return sendSuccess(res, { jobs: formattedJobs, count: count || 0, limit, offset });
   } catch (error) {
     console.error('Get jobs error:', error);
     return sendError(res, 'SERVER_ERROR', 'Failed to fetch jobs', 500);
