@@ -54,41 +54,24 @@ export function AdminUsers() {
           return;
         }
 
-        // Mock data - replace with actual API call
-        setUsers([
-          {
-            id: '1',
-            email: 'john.doe@example.com',
-            full_name: 'John Doe',
-            phone_number: '555-0101',
-            role: 'user',
-            created_at: '2025-12-01T10:00:00Z',
+        const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+        
+        const response = await fetch(`${apiUrl}/admin/users?search=${encodeURIComponent(searchTerm)}`, {
+          headers: {
+            'Authorization': `Bearer ${token}`,
           },
-          {
-            id: '2',
-            email: 'jane.smith@example.com',
-            full_name: 'Jane Smith',
-            phone_number: '555-0102',
-            role: 'provider',
-            created_at: '2025-12-05T14:30:00Z',
-          },
-          {
-            id: '3',
-            email: 'bob.wilson@example.com',
-            full_name: 'Bob Wilson',
-            phone_number: '555-0103',
-            role: 'user',
-            created_at: '2025-12-10T09:15:00Z',
-          },
-          {
-            id: '4',
-            email: 'alice.johnson@example.com',
-            full_name: 'Alice Johnson',
-            phone_number: '555-0104',
-            role: 'provider',
-            created_at: '2025-12-15T11:45:00Z',
-          },
-        ]);
+        });
+
+        if (!response.ok) {
+          if (response.status === 401 || response.status === 403) {
+            navigate('/login');
+            return;
+          }
+          throw new Error('Failed to fetch users');
+        }
+
+        const data = await response.json();
+        setUsers(data.data.users || []);
       } catch (err) {
         console.error('Error fetching users:', err);
         setError('Failed to load users');
@@ -98,12 +81,9 @@ export function AdminUsers() {
     };
 
     fetchUsers();
-  }, [navigate]);
+  }, [navigate, searchTerm]);
 
-  const filteredUsers = users.filter(u =>
-    u.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    u.full_name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredUsers = users;
 
   const handleDeleteUser = async (userId: string) => {
     if (window.confirm('Are you sure you want to delete this user?')) {

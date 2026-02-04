@@ -53,31 +53,22 @@ export function AdminDashboard() {
 
         const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
         
-        // For now, using mock data - replace with actual API calls
-        setStats({
-          totalUsers: 156,
-          totalProviders: 42,
-          totalBookings: 283,
-          totalJobs: 67,
-          activeJobs: 23,
-          completedBookings: 198,
-          usersByRole: [
-            { name: 'Regular Users', value: 114 },
-            { name: 'Providers', value: 42 },
-          ],
-          bookingsByStatus: [
-            { name: 'Completed', value: 198 },
-            { name: 'Active', value: 65 },
-            { name: 'Cancelled', value: 20 },
-          ],
-          jobsByCategory: [
-            { name: 'Plumbing', value: 15 },
-            { name: 'Electrical', value: 12 },
-            { name: 'Cleaning', value: 18 },
-            { name: 'Carpentry', value: 10 },
-            { name: 'HVAC', value: 12 },
-          ],
+        const response = await fetch(`${apiUrl}/admin/stats`, {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+          },
         });
+
+        if (!response.ok) {
+          if (response.status === 401 || response.status === 403) {
+            navigate('/login');
+            return;
+          }
+          throw new Error('Failed to fetch stats');
+        }
+
+        const data = await response.json();
+        setStats(data.data);
       } catch (err) {
         console.error('Error fetching admin stats:', err);
         setError('Failed to load statistics');

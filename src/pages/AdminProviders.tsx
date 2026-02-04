@@ -56,53 +56,24 @@ export function AdminProviders() {
           return;
         }
 
-        // Mock data - replace with actual API call
-        setProviders([
-          {
-            id: '1',
-            email: 'jane.smith@example.com',
-            full_name: 'Jane Smith',
-            specialization: 'Plumbing',
-            location: 'New York, NY',
-            rating: 4.8,
-            total_jobs: 34,
-            verified: true,
-            created_at: '2025-12-05T14:30:00Z',
+        const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+        
+        const response = await fetch(`${apiUrl}/admin/providers?search=${encodeURIComponent(searchTerm)}`, {
+          headers: {
+            'Authorization': `Bearer ${token}`,
           },
-          {
-            id: '2',
-            email: 'alice.johnson@example.com',
-            full_name: 'Alice Johnson',
-            specialization: 'Electrical',
-            location: 'Los Angeles, CA',
-            rating: 4.5,
-            total_jobs: 28,
-            verified: true,
-            created_at: '2025-12-15T11:45:00Z',
-          },
-          {
-            id: '3',
-            email: 'mike.davis@example.com',
-            full_name: 'Mike Davis',
-            specialization: 'HVAC',
-            location: 'Chicago, IL',
-            rating: 4.9,
-            total_jobs: 42,
-            verified: true,
-            created_at: '2025-11-20T08:00:00Z',
-          },
-          {
-            id: '4',
-            email: 'sarah.white@example.com',
-            full_name: 'Sarah White',
-            specialization: 'Cleaning',
-            location: 'Houston, TX',
-            rating: 4.3,
-            total_jobs: 19,
-            verified: false,
-            created_at: '2025-12-25T16:20:00Z',
-          },
-        ]);
+        });
+
+        if (!response.ok) {
+          if (response.status === 401 || response.status === 403) {
+            navigate('/login');
+            return;
+          }
+          throw new Error('Failed to fetch providers');
+        }
+
+        const data = await response.json();
+        setProviders(data.data.providers || []);
       } catch (err) {
         console.error('Error fetching providers:', err);
         setError('Failed to load providers');
@@ -112,13 +83,9 @@ export function AdminProviders() {
     };
 
     fetchProviders();
-  }, [navigate]);
+  }, [navigate, searchTerm]);
 
-  const filteredProviders = providers.filter(p =>
-    p.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    p.full_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    (p.specialization?.toLowerCase().includes(searchTerm.toLowerCase()) ?? false)
-  );
+  const filteredProviders = providers;
 
   const handleDeleteProvider = async (providerId: string) => {
     if (window.confirm('Are you sure you want to delete this provider?')) {

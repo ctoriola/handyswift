@@ -63,64 +63,24 @@ export function AdminBookings() {
           return;
         }
 
-        // Mock data - replace with actual API call
-        setBookings([
-          {
-            id: '1',
-            user_name: 'John Doe',
-            provider_name: 'Jane Smith',
-            service: 'Plumbing Repair',
-            location: '123 Main St, New York, NY',
-            booking_date: '2026-02-05T10:00:00Z',
-            status: 'confirmed',
-            price: 150,
-            created_at: '2026-02-01T14:30:00Z',
+        const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+        
+        const response = await fetch(`${apiUrl}/admin/bookings`, {
+          headers: {
+            'Authorization': `Bearer ${token}`,
           },
-          {
-            id: '2',
-            user_name: 'Bob Wilson',
-            provider_name: 'Alice Johnson',
-            service: 'Electrical Installation',
-            location: '456 Oak Ave, Los Angeles, CA',
-            booking_date: '2026-02-03T14:00:00Z',
-            status: 'completed',
-            price: 200,
-            created_at: '2026-01-28T09:15:00Z',
-          },
-          {
-            id: '3',
-            user_name: 'Sarah Williams',
-            provider_name: 'Mike Davis',
-            service: 'AC Maintenance',
-            location: '789 Elm St, Chicago, IL',
-            booking_date: '2026-02-08T16:00:00Z',
-            status: 'pending',
-            price: 120,
-            created_at: '2026-02-02T11:45:00Z',
-          },
-          {
-            id: '4',
-            user_name: 'Mike Johnson',
-            provider_name: 'Sarah White',
-            service: 'House Cleaning',
-            location: '321 Pine Rd, Houston, TX',
-            booking_date: '2026-01-30T09:00:00Z',
-            status: 'cancelled',
-            price: 100,
-            created_at: '2026-01-29T16:20:00Z',
-          },
-          {
-            id: '5',
-            user_name: 'Emily Davis',
-            provider_name: 'Jane Smith',
-            service: 'Pipe Repair',
-            location: '654 Cedar Ln, Phoenix, AZ',
-            booking_date: '2026-02-07T13:00:00Z',
-            status: 'confirmed',
-            price: 180,
-            created_at: '2026-02-03T10:30:00Z',
-          },
-        ]);
+        });
+
+        if (!response.ok) {
+          if (response.status === 401 || response.status === 403) {
+            navigate('/login');
+            return;
+          }
+          throw new Error('Failed to fetch bookings');
+        }
+
+        const data = await response.json();
+        setBookings(data.data.bookings || []);
       } catch (err) {
         console.error('Error fetching bookings:', err);
         setError('Failed to load bookings');
@@ -132,11 +92,7 @@ export function AdminBookings() {
     fetchBookings();
   }, [navigate]);
 
-  const filteredBookings = bookings.filter(b =>
-    b.user_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    b.provider_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    b.service.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredBookings = bookings;
 
   const handleDeleteBooking = async (bookingId: string) => {
     if (window.confirm('Are you sure you want to delete this booking?')) {

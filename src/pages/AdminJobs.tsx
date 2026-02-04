@@ -63,75 +63,24 @@ export function AdminJobs() {
           return;
         }
 
-        // Mock data - replace with actual API call
-        setJobs([
-          {
-            id: '1',
-            title: 'Kitchen Sink Repair',
-            category: 'Plumbing',
-            posted_by: 'John Doe',
-            location: 'New York, NY',
-            budget: 150,
-            status: 'open',
-            posted_date: '2026-02-01T10:00:00Z',
-            offers_count: 3,
+        const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+        
+        const response = await fetch(`${apiUrl}/admin/jobs`, {
+          headers: {
+            'Authorization': `Bearer ${token}`,
           },
-          {
-            id: '2',
-            title: 'Electrical Outlet Installation',
-            category: 'Electrical',
-            posted_by: 'Bob Wilson',
-            location: 'Los Angeles, CA',
-            budget: 200,
-            status: 'in_progress',
-            posted_date: '2026-01-28T14:30:00Z',
-            offers_count: 2,
-          },
-          {
-            id: '3',
-            title: 'AC Unit Maintenance',
-            category: 'HVAC',
-            posted_by: 'Sarah Williams',
-            location: 'Chicago, IL',
-            budget: 120,
-            status: 'open',
-            posted_date: '2026-02-02T09:15:00Z',
-            offers_count: 1,
-          },
-          {
-            id: '4',
-            title: 'House Deep Cleaning',
-            category: 'Cleaning',
-            posted_by: 'Mike Johnson',
-            location: 'Houston, TX',
-            budget: 250,
-            status: 'completed',
-            posted_date: '2026-01-30T11:45:00Z',
-            offers_count: 5,
-          },
-          {
-            id: '5',
-            title: 'Cabinet Installation',
-            category: 'Carpentry',
-            posted_by: 'Emily Davis',
-            location: 'Phoenix, AZ',
-            budget: 400,
-            status: 'closed',
-            posted_date: '2026-01-25T16:20:00Z',
-            offers_count: 4,
-          },
-          {
-            id: '6',
-            title: 'Door Lock Repair',
-            category: 'Locksmith',
-            posted_by: 'David Brown',
-            location: 'Seattle, WA',
-            budget: 80,
-            status: 'open',
-            posted_date: '2026-02-03T10:30:00Z',
-            offers_count: 2,
-          },
-        ]);
+        });
+
+        if (!response.ok) {
+          if (response.status === 401 || response.status === 403) {
+            navigate('/login');
+            return;
+          }
+          throw new Error('Failed to fetch jobs');
+        }
+
+        const data = await response.json();
+        setJobs(data.data.jobs || []);
       } catch (err) {
         console.error('Error fetching jobs:', err);
         setError('Failed to load jobs');
@@ -143,11 +92,7 @@ export function AdminJobs() {
     fetchJobs();
   }, [navigate]);
 
-  const filteredJobs = jobs.filter(j =>
-    j.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    j.category.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    j.posted_by.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredJobs = jobs;
 
   const handleDeleteJob = async (jobId: string) => {
     if (window.confirm('Are you sure you want to delete this job?')) {
