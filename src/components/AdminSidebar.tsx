@@ -54,7 +54,7 @@ export function AdminSidebar() {
   };
 
   return (
-    <div className="fixed left-0 top-0 h-screen w-64 bg-slate-900 text-white shadow-lg z-40 flex flex-col">
+    <div className="w-64 bg-slate-900 text-white shadow-lg flex flex-col flex-shrink-0 h-screen">
       {/* Logo/Header */}
       <div className="p-6 border-b border-slate-800">
         <div className="flex items-center gap-3">

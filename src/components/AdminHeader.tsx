@@ -10,7 +10,7 @@ export function AdminHeader({ title, description }: AdminHeaderProps) {
   const { user } = useAuth();
 
   return (
-    <div className="fixed top-0 left-64 right-0 bg-white border-b border-slate-200 shadow-sm z-30 h-16">
+    <div className="bg-white border-b border-slate-200 shadow-sm h-16 flex-shrink-0">
       <div className="flex items-center justify-between h-full px-8">
         <div>
           <h2 className="text-xl font-bold text-slate-900">{title}</h2>

@@ -121,7 +121,7 @@ export function AdminUsers() {
       <AdminSidebar />
       <div className="flex-1 flex flex-col">
         <AdminHeader title="Users" description="Manage all registered users" />
-        <div className="flex-1 overflow-auto pt-20 pb-12 px-8">
+        <div className="flex-1 overflow-auto pb-12 px-8">
           <div className="container mx-auto max-w-6xl">
           {error && <div className="bg-red-50 text-red-600 p-4 rounded-lg mb-4">{error}</div>}
 
