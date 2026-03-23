@@ -105,16 +105,17 @@ router.get('/', authMiddleware, async (req: AuthRequest, res) => {
 router.get('/available/for-provider', authMiddleware, async (req: AuthRequest, res) => {
   try {
     // Get provider's specialization and location
-    const { data: provider, error: providerError } = await supabaseAdmin
+    const { data: providers, error: providerError } = await supabaseAdmin
       .from('providers')
       .select('specialization, location')
-      .eq('user_id', req.userId)
-      .single();
+      .eq('user_id', req.userId);
 
-    if (providerError || !provider) {
+    if (providerError || !providers || providers.length === 0) {
+      console.error('Provider not found:', { userId: req.userId, providerError });
       return sendError(res, 'PROVIDER_NOT_FOUND', 'Provider profile not found', 404);
     }
 
+    const provider = providers[0];
     const specialization = provider.specialization || [];
     const providerLocation = provider.location;
 
@@ -138,6 +139,7 @@ router.get('/available/for-provider', authMiddleware, async (req: AuthRequest, r
       .limit(10);
 
     if (error) {
+      console.error('Jobs query error:', error);
       return sendError(res, 'DATABASE_ERROR', error.message, 500);
     }
 
