@@ -24,7 +24,7 @@ import {
 import { useState, useEffect } from "react";
 import { ImageWithFallback } from "../components/figma/ImageWithFallback";
 import { useAuth } from "../contexts/AuthContext";
-import { authAPI } from "../services/api";
+import { authAPI, adminAPI } from "../services/api";
 
 interface ProviderProfileData {
   id: string;
@@ -46,6 +46,7 @@ export function ProviderProfileEdit() {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [isAvailable, setIsAvailable] = useState(true);
+  const [locations, setLocations] = useState<string[]>(['Abuja', 'Lagos']);
   
   const [formData, setFormData] = useState<ProviderProfileData>({
     id: '',
@@ -77,9 +78,9 @@ export function ProviderProfileEdit() {
     "Other Services"
   ];
 
-  // Fetch provider profile data on mount
+  // Fetch provider profile data and locations on mount
   useEffect(() => {
-    const fetchProfile = async () => {
+    const fetchData = async () => {
       try {
         setLoading(true);
         const token = localStorage.getItem('authToken');
@@ -88,6 +89,19 @@ export function ProviderProfileEdit() {
           return;
         }
 
+        // Fetch locations
+        try {
+          const locationsResponse = await adminAPI.getLocations(token);
+          if (locationsResponse.success && locationsResponse.locations) {
+            setLocations(locationsResponse.locations.map((loc: any) => loc.name || loc));
+          }
+        } catch (err) {
+          console.error('Error fetching locations:', err);
+          // Use default locations if fetch fails
+          setLocations(['Abuja', 'Lagos']);
+        }
+
+        // Fetch profile data
         const response = await authAPI.getProfile(token);
         console.log('Profile response:', response);
         
@@ -102,7 +116,7 @@ export function ProviderProfileEdit() {
             name: profileData.name || '',
             email: profileData.email || '',
             phone: profileData.phone || profileData.phone_number || '',
-            location: profileData.location || profileData.city || '',
+            location: profileData.location || '',
             bio: profileData.bio || '',
             profilePhoto: profileData.profilePhoto || profileData.profile_photo_url || profileData.profile_photo || '',
             specialization: profileData.specialization || [],
@@ -112,6 +126,7 @@ export function ProviderProfileEdit() {
           
           console.log('Form data set to:', {
             fullName: mappedData.fullName,
+            location: mappedData.location,
             specialization: mappedData.specialization
           });
           
@@ -131,7 +146,7 @@ export function ProviderProfileEdit() {
       }
     };
 
-    fetchProfile();
+    fetchData();
   }, [navigate]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -293,13 +308,19 @@ export function ProviderProfileEdit() {
                   </div>
                   <div>
                     <Label htmlFor="location">Location *</Label>
-                    <Input
+                    <select
                       id="location"
                       value={formData.location}
                       onChange={handleChange}
-                      className="mt-2 h-12 rounded-xl"
-                      placeholder="e.g., Lagos, Nigeria"
-                    />
+                      className="w-full mt-2 h-12 px-4 rounded-xl border border-slate-300 bg-white text-slate-900 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                    >
+                      <option value="">Select a location</option>
+                      {locations.map((loc) => (
+                        <option key={loc} value={loc}>
+                          {loc}
+                        </option>
+                      ))}
+                    </select>
                   </div>
                 </div>
               </div>

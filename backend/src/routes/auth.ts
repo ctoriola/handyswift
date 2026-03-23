@@ -66,6 +66,7 @@ router.post('/register', async (req, res) => {
             user_id: newUser.id,
             is_available: true,
             specialization: specs,
+            location: null,
           },
         ]);
     }
@@ -181,16 +182,19 @@ router.get('/me', authMiddleware, async (req: AuthRequest, res) => {
       return sendError(res, 'NOT_FOUND', 'User not found', 404);
     }
 
-    // Fetch specialization if provider
+    // Fetch specialization and location if provider
     let specialization: string[] | undefined = undefined;
+    let providerLocation: string | undefined = undefined;
+    
     if (user.role === 'provider') {
       const { data: providerData } = await supabaseAdmin
         .from('providers')
-        .select('specialization')
+        .select('specialization, location')
         .eq('user_id', user.id)
         .single();
       
       specialization = providerData?.specialization;
+      providerLocation = providerData?.location;
     }
 
     return sendSuccess(res, {
@@ -201,7 +205,7 @@ router.get('/me', authMiddleware, async (req: AuthRequest, res) => {
       name: user.name,
       phone: user.phone,
       bio: user.bio,
-      location: user.location,
+      location: providerLocation || user.location,
       profilePhoto: user.profile_photo_url,
       specialization,
       membershipType: user.membership_type,
@@ -238,15 +242,22 @@ router.put('/profile', authMiddleware, async (req: AuthRequest, res) => {
       return sendError(res, 'DATABASE_ERROR', error.message, 500);
     }
 
-    // If specialization is provided, update provider profile
-    if (specialization) {
-      const specs = Array.isArray(specialization) ? specialization : [specialization];
+    // If specialization or location is provided, update provider profile
+    if (specialization || location) {
+      const updateData: any = { updated_at: new Date() };
+      
+      if (specialization) {
+        const specs = Array.isArray(specialization) ? specialization : [specialization];
+        updateData.specialization = specs;
+      }
+      
+      if (location) {
+        updateData.location = location;
+      }
+      
       await supabaseAdmin
         .from('providers')
-        .update({
-          specialization: specs,
-          updated_at: new Date(),
-        })
+        .update(updateData)
         .eq('user_id', req.userId);
     }
 

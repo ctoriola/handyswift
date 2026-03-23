@@ -164,3 +164,25 @@ export const bookingsAPI = {
     return response.json();
   },
 };
+
+// Admin endpoints
+export const adminAPI = {
+  async getLocations(token: string) {
+    const response = await fetch(`${API_URL}/admin/locations`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return response.json();
+  },
+
+  async addLocation(token: string, name: string) {
+    const response = await fetch(`${API_URL}/admin/locations`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ name }),
+    });
+    return response.json();
+  },
+};

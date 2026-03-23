@@ -280,4 +280,100 @@ router.get('/jobs', authMiddleware, adminMiddleware, async (req: AuthRequest, re
   }
 });
 
+// Get All Available Locations
+router.get('/locations', authMiddleware, adminMiddleware, async (_req: AuthRequest, res) => {
+  try {
+    const { data: locations, error } = await supabaseAdmin
+      .from('locations')
+      .select('*')
+      .order('name', { ascending: true });
+
+    if (error) {
+      // If table doesn't exist, return default locations
+      return sendSuccess(res, {
+        locations: [
+          { id: 1, name: 'Abuja' },
+          { id: 2, name: 'Lagos' },
+        ],
+      });
+    }
+
+    return sendSuccess(res, { locations: locations || [] });
+  } catch (error) {
+    console.error('Get locations error:', error);
+    // Return default locations if there's an error
+    return sendSuccess(res, {
+      locations: [
+        { id: 1, name: 'Abuja' },
+        { id: 2, name: 'Lagos' },
+      ],
+    });
+  }
+});
+
+// Add New Location
+router.post('/locations', authMiddleware, adminMiddleware, async (req: AuthRequest, res) => {
+  try {
+    const { name } = req.body;
+
+    if (!name || typeof name !== 'string') {
+      return sendError(res, 'VALIDATION_ERROR', 'Location name is required', 400);
+    }
+
+    const { data: newLocation, error } = await supabaseAdmin
+      .from('locations')
+      .insert([{ name: name.trim() }])
+      .select()
+      .single();
+
+    if (error) {
+      if (error.message.includes('no rows returned')) {
+        // Location might already exist, try to get it
+        const { data: existingLocation } = await supabaseAdmin
+          .from('locations')
+          .select('*')
+          .ilike('name', name.trim())
+          .single();
+        
+        if (existingLocation) {
+          return sendSuccess(res, { location: existingLocation }, 'Location already exists');
+        }
+      }
+      return sendError(res, 'DATABASE_ERROR', error.message, 500);
+    }
+
+    return sendSuccess(res, { location: newLocation }, 'Location added successfully');
+  } catch (error) {
+    console.error('Add location error:', error);
+    return sendError(res, 'SERVER_ERROR', 'Failed to add location', 500);
+  }
+});
+
+// Update Provider Location
+router.put('/providers/:userId/location', authMiddleware, adminMiddleware, async (req: AuthRequest, res) => {
+  try {
+    const { userId } = req.params;
+    const { location } = req.body;
+
+    if (!location || typeof location !== 'string') {
+      return sendError(res, 'VALIDATION_ERROR', 'Location is required', 400);
+    }
+
+    // Update location in providers table
+    const { error } = await supabaseAdmin
+      .from('providers')
+      .update({ location: location.trim() })
+      .eq('user_id', userId);
+
+    if (error) {
+      return sendError(res, 'DATABASE_ERROR', error.message, 500);
+    }
+
+    return sendSuccess(res, {}, 'Provider location updated successfully');
+  } catch (error) {
+    console.error('Update provider location error:', error);
+    return sendError(res, 'SERVER_ERROR', 'Failed to update provider location', 500);
+  }
+});
+
 export default router;

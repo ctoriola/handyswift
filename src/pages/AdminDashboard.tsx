@@ -5,7 +5,11 @@ import { AdminSidebar } from '../components/AdminSidebar';
 import { AdminHeader } from '../components/AdminHeader';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts';
-import { Users, Briefcase, Calendar, FileText, TrendingUp } from 'lucide-react';
+import { Users, Briefcase, Calendar, FileText, TrendingUp, MapPin, Plus } from 'lucide-react';
+import { Button } from '../components/ui/button';
+import { Input } from '../components/ui/input';
+import { Label } from '../components/ui/label';
+import { adminAPI } from '../services/api';
 
 interface AdminStats {
   totalUsers: number;
@@ -27,6 +31,9 @@ export function AdminDashboard() {
   const [stats, setStats] = useState<AdminStats | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [locations, setLocations] = useState<Array<{id: number; name: string}>>([]);
+  const [newLocation, setNewLocation] = useState('');
+  const [addingLocation, setAddingLocation] = useState(false);
 
   // Verify admin access - wait for auth initialization
   useEffect(() => {
@@ -42,7 +49,7 @@ export function AdminDashboard() {
 
   // Fetch admin statistics
   useEffect(() => {
-    const fetchStats = async () => {
+    const fetchData = async () => {
       try {
         setLoading(true);
         const token = localStorage.getItem('authToken');
@@ -69,16 +76,58 @@ export function AdminDashboard() {
 
         const data = await response.json();
         setStats(data.data);
+
+        // Fetch locations
+        try {
+          const locationRes = await adminAPI.getLocations(token);
+          if (locationRes.success && locationRes.locations) {
+            setLocations(locationRes.locations);
+          }
+        } catch (err) {
+          console.error('Error fetching locations:', err);
+          setLocations([
+            { id: 1, name: 'Abuja' },
+            { id: 2, name: 'Lagos' },
+          ]);
+        }
       } catch (err) {
-        console.error('Error fetching admin stats:', err);
-        setError('Failed to load statistics');
+        console.error('Error fetching admin data:', err);
+        setError('Failed to load data');
       } finally {
         setLoading(false);
       }
     };
 
-    fetchStats();
+    fetchData();
   }, [navigate]);
+
+  const handleAddLocation = async () => {
+    if (!newLocation.trim()) {
+      return;
+    }
+
+    setAddingLocation(true);
+    try {
+      const token = localStorage.getItem('authToken');
+      if (!token) {
+        navigate('/login');
+        return;
+      }
+
+      const res = await adminAPI.addLocation(token, newLocation);
+      if (res.success) {
+        setLocations([...locations, res.location]);
+        setNewLocation('');
+      } else {
+        setError(res.message || 'Failed to add location');
+      }
+    } catch (err) {
+      console.error('Error adding location:', err);
+      setError('Error adding location');
+    } finally {
+      setAddingLocation(false);
+    }
+  };
 
   if (loading) {
     return <div className="flex items-center justify-center min-h-screen">Loading admin dashboard...</div>;
@@ -317,6 +366,61 @@ export function AdminDashboard() {
                 <p className="text-sm text-slate-600">{stats.activeJobs} active jobs</p>
               </CardContent>
             </Card>
+            </div>
+
+            {/* Locations Management */}
+            <div className="mt-8">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <MapPin className="h-5 w-5" />
+                    Service Locations
+                  </CardTitle>
+                  <CardDescription>Add and manage service locations for providers</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    {/* Add New Location */}
+                    <div className="flex gap-2">
+                      <Input
+                        type="text"
+                        placeholder="Enter location name (e.g., Benin City)"
+                        value={newLocation}
+                        onChange={(e) => setNewLocation(e.target.value)}
+                        className="flex-1"
+                        onKeyPress={(e) => {
+                          if (e.key === 'Enter') {
+                            handleAddLocation();
+                          }
+                        }}
+                      />
+                      <Button
+                        onClick={handleAddLocation}
+                        disabled={addingLocation || !newLocation.trim()}
+                        className="bg-primary hover:bg-primary/90 text-white"
+                      >
+                        <Plus className="h-4 w-4 mr-2" />
+                        Add Location
+                      </Button>
+                    </div>
+
+                    {/* List of Locations */}
+                    <div className="border-t pt-4">
+                      <p className="text-sm font-medium text-slate-600 mb-3">Available Locations ({locations.length})</p>
+                      <div className="flex flex-wrap gap-2">
+                        {locations.map((loc) => (
+                          <div
+                            key={loc.id}
+                            className="px-3 py-1 bg-primary/10 text-primary rounded-full text-sm"
+                          >
+                            {loc.name}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
             </div>
           </div>
         </div>
