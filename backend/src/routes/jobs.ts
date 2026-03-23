@@ -101,13 +101,13 @@ router.get('/', authMiddleware, async (req: AuthRequest, res) => {
   }
 });
 
-// Get Available Jobs for Provider (filtered by provider's specialization)
+// Get Available Jobs for Provider (filtered by provider's specialization AND location)
 router.get('/available/for-provider', authMiddleware, async (req: AuthRequest, res) => {
   try {
-    // Get provider's specialization
+    // Get provider's specialization and location
     const { data: provider, error: providerError } = await supabaseAdmin
       .from('providers')
-      .select('specialization')
+      .select('specialization, location')
       .eq('user_id', req.userId)
       .single();
 
@@ -116,13 +116,24 @@ router.get('/available/for-provider', authMiddleware, async (req: AuthRequest, r
     }
 
     const specialization = provider.specialization || [];
+    const providerLocation = provider.location;
 
-    // Get jobs in provider's specialization categories that are still open
-    const { data: jobs, error } = await supabaseAdmin
+    let query = supabaseAdmin
       .from('jobs')
       .select('*')
-      .eq('status', 'active')
-      .in('category', specialization.length > 0 ? specialization : [''])
+      .eq('status', 'active');
+
+    // Filter by specialization if provider has any
+    if (specialization.length > 0) {
+      query = query.in('category', specialization);
+    }
+
+    // Filter by location if provider has a location set
+    if (providerLocation) {
+      query = query.eq('location', providerLocation);
+    }
+
+    const { data: jobs, error } = await query
       .order('created_at', { ascending: false })
       .limit(10);
 

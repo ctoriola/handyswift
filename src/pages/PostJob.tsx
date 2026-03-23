@@ -7,8 +7,9 @@ import { Textarea } from "../components/ui/textarea";
 import { Label } from "../components/ui/label";
 import { ChevronLeft, FileText, Users, CheckCircle, AlertCircle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAuth } from "../contexts/AuthContext";
+import { adminAPI } from "../services/api";
 
 export function PostJob() {
   const navigate = useNavigate();
@@ -42,6 +43,24 @@ export function PostJob() {
     timeline: "",
     location: "",
   });
+
+  const [locations, setLocations] = useState<string[]>(['Abuja', 'Lagos']);
+
+  useEffect(() => {
+    const fetchLocations = async () => {
+      try {
+        const token = localStorage.getItem('authToken');
+        const response = await adminAPI.getLocations(token || '');
+        if (response.success && response.locations) {
+          setLocations(response.locations.map((loc: any) => loc.name));
+        }
+      } catch (err) {
+        console.error('Error fetching locations:', err);
+        // Keep default locations if fetch fails
+      }
+    };
+    fetchLocations();
+  }, []);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { id, value } = e.target;
@@ -358,14 +377,20 @@ export function PostJob() {
                   <Label htmlFor="location" className="text-slate-900 mb-2 block">
                     Location <span className="text-red-500">*</span>
                   </Label>
-                  <Input
+                  <select
                     id="location"
                     value={formData.location}
                     onChange={handleInputChange}
-                    placeholder="e.g., Victoria Island, Lagos"
-                    className="w-full h-12 rounded-xl border-slate-300"
+                    className="w-full h-12 rounded-xl border border-slate-300 px-4 text-slate-900 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
                     required
-                  />
+                  >
+                    <option value="">Select a location</option>
+                    {locations.map((loc) => (
+                      <option key={loc} value={loc}>
+                        {loc}
+                      </option>
+                    ))}
+                  </select>
                 </div>
               </form>
             </div>
