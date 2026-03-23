@@ -89,29 +89,32 @@ export function ProviderProfileEdit() {
         const response = await authAPI.getProfile(token);
         console.log('Profile response:', response);
         
-        // Handle both response.data and direct response
+        // API returns nested structure: response.data contains user object
         const profileData = response.data || response;
         
         if (response.success && profileData) {
-          setFormData({
+          // Map username to name, handle all field variations
+          const mappedData: ProviderProfileData = {
             id: profileData.id || '',
-            name: profileData.name || profileData.full_name || '',
+            name: profileData.name || profileData.username || profileData.full_name || '',
             email: profileData.email || '',
             phone: profileData.phone || profileData.phone_number || '',
             location: profileData.location || profileData.city || '',
             bio: profileData.bio || '',
-            profilePhoto: profileData.profilePhoto || profileData.profile_photo_url || '',
+            profilePhoto: profileData.profilePhoto || profileData.profile_photo_url || profileData.profile_photo || '',
             specialization: profileData.specialization || [],
-          });
+          };
+          
+          setFormData(mappedData);
           
           console.log('Form data set to:', {
-            name: profileData.name || profileData.full_name,
-            specialization: profileData.specialization
+            name: mappedData.name,
+            specialization: mappedData.specialization
           });
           
           // Set selected category from user data
-          if (profileData.specialization && profileData.specialization.length > 0) {
-            setSelectedCategory(profileData.specialization[0]);
+          if (mappedData.specialization && mappedData.specialization.length > 0) {
+            setSelectedCategory(mappedData.specialization[0]);
           }
         } else {
           setError('Failed to load profile data');
