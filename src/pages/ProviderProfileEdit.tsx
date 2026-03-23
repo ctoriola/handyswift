@@ -87,17 +87,26 @@ export function ProviderProfileEdit() {
         }
 
         const response = await authAPI.getProfile(token);
-        if (response.success && response.data) {
-          const profileData = response.data;
+        console.log('Profile response:', response);
+        
+        // Handle both response.data and direct response
+        const profileData = response.data || response;
+        
+        if (response.success && profileData) {
           setFormData({
-            id: profileData.id,
-            name: profileData.name || '',
+            id: profileData.id || '',
+            name: profileData.name || profileData.full_name || '',
             email: profileData.email || '',
-            phone: profileData.phone || '',
-            location: profileData.location || '',
+            phone: profileData.phone || profileData.phone_number || '',
+            location: profileData.location || profileData.city || '',
             bio: profileData.bio || '',
-            profilePhoto: profileData.profilePhoto || '',
+            profilePhoto: profileData.profilePhoto || profileData.profile_photo_url || '',
             specialization: profileData.specialization || [],
+          });
+          
+          console.log('Form data set to:', {
+            name: profileData.name || profileData.full_name,
+            specialization: profileData.specialization
           });
           
           // Set selected category from user data
