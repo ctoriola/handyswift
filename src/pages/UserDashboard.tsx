@@ -72,19 +72,19 @@ const mockBookings: Booking[] = [
 ];
 
 export function UserDashboard() {
-  const { user } = useAuth();
+  const { user, isInitializing } = useAuth();
   const navigate = useNavigate();
   const [copiedReferral, setCopiedReferral] = useState(false);
   const [jobs, setJobs] = useState<Job[]>([]);
   const [loadingJobs, setLoadingJobs] = useState(true);
   const [jobsError, setJobsError] = useState("");
 
-  // Redirect to login if not authenticated
+  // Redirect to login if not authenticated (but wait for initialization to complete)
   useEffect(() => {
-    if (!user) {
+    if (!isInitializing && !user) {
       navigate('/login');
     }
-  }, [user, navigate]);
+  }, [user, isInitializing, navigate]);
 
   // Fetch user's posted jobs
   useEffect(() => {

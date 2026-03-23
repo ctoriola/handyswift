@@ -40,7 +40,7 @@ interface ProviderProfileData {
 
 export function ProviderProfileEdit() {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, isInitializing } = useAuth();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
@@ -77,6 +77,13 @@ export function ProviderProfileEdit() {
     "Appliance Repair",
     "Other Services"
   ];
+
+  // Verify authentication - wait for auth initialization
+  useEffect(() => {
+    if (!isInitializing && !user) {
+      navigate('/login');
+    }
+  }, [user, isInitializing, navigate]);
 
   // Fetch provider profile data and locations on mount
   useEffect(() => {

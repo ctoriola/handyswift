@@ -32,18 +32,18 @@ import {
 
 export function ProviderDashboard() {
   const navigate = useNavigate();
-  const { user, isProvider } = useAuth();
+  const { user, isProvider, isInitializing } = useAuth();
   const [selectedTimeRange, setSelectedTimeRange] = useState<'30days' | '3months' | '6months'>('30days');
   const [availableJobs, setAvailableJobs] = useState<any[]>([]);
   const [loadingJobs, setLoadingJobs] = useState(false);
   const [jobsError, setJobsError] = useState('');
 
-  // Redirect if not authenticated or not a provider
+  // Redirect if not authenticated or not a provider (but wait for initialization to complete)
   useEffect(() => {
-    if (!user || !isProvider) {
+    if (!isInitializing && (!user || !isProvider)) {
       navigate('/login');
     }
-  }, [user, isProvider, navigate]);
+  }, [user, isProvider, isInitializing, navigate]);
 
   // Fetch available jobs for provider
   useEffect(() => {
