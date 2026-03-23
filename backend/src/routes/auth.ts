@@ -202,10 +202,9 @@ router.get('/me', authMiddleware, async (req: AuthRequest, res) => {
       username: user.username,
       email: user.email,
       full_name: user.full_name,
-      name: user.name,
       phone: user.phone,
       bio: user.bio,
-      location: providerLocation || user.location,
+      location: providerLocation || null,
       profilePhoto: user.profile_photo_url,
       specialization,
       membershipType: user.membership_type,
@@ -224,16 +223,17 @@ router.put('/profile', authMiddleware, async (req: AuthRequest, res) => {
   try {
     const { name, phone, bio, location, profilePhoto, specialization } = req.body;
 
+    // Update user info (use full_name column)
+    const updateData: any = {
+      full_name: name,
+      phone,
+      bio,
+      profile_photo_url: profilePhoto,
+    };
+
     const { data: updatedUser, error } = await supabaseAdmin
       .from('users')
-      .update({
-        name,
-        phone,
-        bio,
-        location,
-        profile_photo_url: profilePhoto,
-        updated_at: new Date(),
-      })
+      .update(updateData)
       .eq('id', req.userId)
       .select()
       .single();
@@ -244,20 +244,20 @@ router.put('/profile', authMiddleware, async (req: AuthRequest, res) => {
 
     // If specialization or location is provided, update provider profile
     if (specialization || location) {
-      const updateData: any = { updated_at: new Date() };
+      const providerUpdateData: any = {};
       
       if (specialization) {
         const specs = Array.isArray(specialization) ? specialization : [specialization];
-        updateData.specialization = specs;
+        providerUpdateData.specialization = specs;
       }
       
       if (location) {
-        updateData.location = location;
+        providerUpdateData.location = location;
       }
       
       await supabaseAdmin
         .from('providers')
-        .update(updateData)
+        .update(providerUpdateData)
         .eq('user_id', req.userId);
     }
 
