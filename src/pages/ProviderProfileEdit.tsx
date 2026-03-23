@@ -28,7 +28,8 @@ import { authAPI } from "../services/api";
 
 interface ProviderProfileData {
   id: string;
-  name: string;
+  fullName: string;
+  name?: string;
   email: string;
   phone: string;
   location: string;
@@ -48,6 +49,7 @@ export function ProviderProfileEdit() {
   
   const [formData, setFormData] = useState<ProviderProfileData>({
     id: '',
+    fullName: '',
     name: '',
     email: '',
     phone: '',
@@ -93,10 +95,11 @@ export function ProviderProfileEdit() {
         const profileData = response.data || response;
         
         if (response.success && profileData) {
-          // Map username to name, handle all field variations
+          // Map API response fields to form data
           const mappedData: ProviderProfileData = {
             id: profileData.id || '',
-            name: profileData.name || profileData.username || profileData.full_name || '',
+            fullName: profileData.full_name || profileData.username || '',
+            name: profileData.name || '',
             email: profileData.email || '',
             phone: profileData.phone || profileData.phone_number || '',
             location: profileData.location || profileData.city || '',
@@ -108,13 +111,14 @@ export function ProviderProfileEdit() {
           setFormData(mappedData);
           
           console.log('Form data set to:', {
-            name: mappedData.name,
+            fullName: mappedData.fullName,
             specialization: mappedData.specialization
           });
           
           // Set selected category from user data
           if (mappedData.specialization && mappedData.specialization.length > 0) {
             setSelectedCategory(mappedData.specialization[0]);
+            console.log('Selected category:', mappedData.specialization[0]);
           }
         } else {
           setError('Failed to load profile data');
@@ -146,7 +150,7 @@ export function ProviderProfileEdit() {
     setSaving(true);
 
     // Validation
-    if (!formData.name.trim()) {
+    if (!formData.fullName.trim()) {
       setError('Full name is required');
       setSaving(false);
       return;
@@ -175,7 +179,7 @@ export function ProviderProfileEdit() {
       }
 
       const response = await authAPI.updateProfile(token, {
-        name: formData.name,
+        name: formData.fullName,
         phone: formData.phone,
         location: formData.location,
         bio: formData.bio,
@@ -257,10 +261,10 @@ export function ProviderProfileEdit() {
                 <h2 className="text-2xl text-slate-900 mb-6">Basic Information</h2>
                 <div className="space-y-5">
                   <div>
-                    <Label htmlFor="name">Full Name *</Label>
+                    <Label htmlFor="fullName">Full Name *</Label>
                     <Input
-                      id="name"
-                      value={formData.name}
+                      id="fullName"
+                      value={formData.fullName}
                       onChange={handleChange}
                       className="mt-2 h-12 rounded-xl"
                       placeholder="Enter your full name"

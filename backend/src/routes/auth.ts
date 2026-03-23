@@ -181,15 +181,29 @@ router.get('/me', authMiddleware, async (req: AuthRequest, res) => {
       return sendError(res, 'NOT_FOUND', 'User not found', 404);
     }
 
+    // Fetch specialization if provider
+    let specialization: string[] | undefined = undefined;
+    if (user.role === 'provider') {
+      const { data: providerData } = await supabaseAdmin
+        .from('providers')
+        .select('specialization')
+        .eq('user_id', user.id)
+        .single();
+      
+      specialization = providerData?.specialization;
+    }
+
     return sendSuccess(res, {
       id: user.id,
       username: user.username,
       email: user.email,
+      full_name: user.full_name,
       name: user.name,
       phone: user.phone,
       bio: user.bio,
       location: user.location,
       profilePhoto: user.profile_photo_url,
+      specialization,
       membershipType: user.membership_type,
       role: user.role,
       verificationStatus: user.verification_status,
